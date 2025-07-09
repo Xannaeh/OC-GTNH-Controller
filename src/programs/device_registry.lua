@@ -59,12 +59,17 @@ function DeviceRegistry:pickAddress(deviceType)
     local i = 1
     print("Available component addresses:")
     for addr, _ in component.list(ctype) do
+        print("[DEBUG] Checking:", addr)
         if not self:isAddressRegistered(addr) then
+            print("[DEBUG] Unregistered, adding option:", addr)
             print(string.format("%d) %s", i, addr))
             addresses[i] = addr
             i = i + 1
+        else
+            print("[DEBUG] Already registered:", addr)
         end
     end
+
     if #addresses == 0 then
         print("No available addresses for type: " .. deviceType)
         return nil
