@@ -1,3 +1,5 @@
+local component = require("component")
+
 local FluidStorage = {}
 FluidStorage.__index = FluidStorage
 
@@ -13,16 +15,22 @@ function FluidStorage:new(internalId, address, fluid, side, capacity, amount, di
     return obj
 end
 
+function FluidStorage:readFluidStatus()
+    local transposer = component.proxy(self.address)
+    local fluids = transposer.getFluidInTank(self.side)
+    if fluids and #fluids > 0 then
+        self.fluid = fluids[1].name or "Unknown"
+        self.amount = fluids[1].amount or 0
+        self.capacity = transposer.getTankCapacity(self.side) or 0
+    end
+end
+
 function FluidStorage:getPercent()
     if self.capacity > 0 then
         return (self.amount / self.capacity) * 100
     else
         return 0
     end
-end
-
-function FluidStorage:update(newAmount)
-    self.amount = newAmount or self.amount
 end
 
 function FluidStorage:toString()

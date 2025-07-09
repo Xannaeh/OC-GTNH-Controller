@@ -1,3 +1,5 @@
+local component = require("component")
+
 local PowerStorage = {}
 PowerStorage.__index = PowerStorage
 
@@ -11,16 +13,18 @@ function PowerStorage:new(internalId, address, capacity, amount, display)
     return obj
 end
 
+function PowerStorage:readPowerStatus()
+    local machine = component.proxy(self.address)
+    self.amount = machine.getEUStored() or 0
+    self.capacity = machine.getEUMaxStored() or 0
+end
+
 function PowerStorage:getPercent()
     if self.capacity > 0 then
         return (self.amount / self.capacity) * 100
     else
         return 0
     end
-end
-
-function PowerStorage:update(newAmount)
-    self.amount = newAmount or self.amount
 end
 
 function PowerStorage:toString()
