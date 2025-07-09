@@ -22,21 +22,32 @@ function DeviceRegistry:save()
     file:close()
 end
 
-function DeviceRegistry:pickDeviceClass()
-    local keys = {}
+function DeviceRegistry:showDeviceClasses()
     local i = 1
     print("Available device classes:")
     for k, _ in pairs(deviceTypes) do
         print(string.format("%d) %s", i, k))
+        i = i + 1
+    end
+end
+
+function DeviceRegistry:pickDeviceClass()
+    local keys = {}
+    local i = 1
+    for k, _ in pairs(deviceTypes) do
         keys[i] = k
         i = i + 1
     end
-    io.write("Pick class number: ")
+    print("Pick device class:")
+    for index, className in ipairs(keys) do
+        print(string.format("%d) %s", index, className))
+    end
+    io.write("> ")
     local choice = tonumber(io.read())
     if choice and keys[choice] then
         return keys[choice]
     else
-        print("Invalid choice.")
+        print("Invalid class.")
         return nil
     end
 end
@@ -62,7 +73,7 @@ function DeviceRegistry:pickAddress(deviceType)
     if num and addresses[num] then
         return addresses[num]
     else
-        print("Invalid choice.")
+        print("Invalid address choice.")
         return nil
     end
 end
@@ -118,7 +129,7 @@ function DeviceRegistry:run()
         io.write("> ")
         local choice = io.read()
         if choice == "1" then
-            self:pickDeviceClass() -- show numbered list
+            self:showDeviceClasses()
         elseif choice == "2" then
             local class = self:pickDeviceClass()
             if class then
