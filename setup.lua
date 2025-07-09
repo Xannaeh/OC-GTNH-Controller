@@ -1,7 +1,7 @@
 -- ===========================================
 -- OC GTNH Project Installer
 -- Auto-create folders, fetch files from GitHub
--- Usage: install.lua Y|N  (Y = replace all, N = skip persistent)
+-- Usage: setup.lua Y|N  (Y = replace all, N = skip persistent)
 -- ===========================================
 
 local shell = require("shell")
