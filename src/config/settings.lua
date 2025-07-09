@@ -12,7 +12,7 @@ Settings.powerDevice = "d23fb12d-a11a-4f54-b1d5-a47897ac0e74"
 
 -- Fluid Tanks: one GT machine UUID
 Settings.fluidTanks = {
-    main = "a45c6d6e-930c-41ef-a98b-97869ad1d667"
+    main = "a45c46de-930c-41ef-a98b-87b3556ad667"
 }
 
 
