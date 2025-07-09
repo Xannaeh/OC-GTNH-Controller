@@ -42,6 +42,7 @@ local files = {
     { path = "/home/src/modules/Fluid.lua", url = github .. "/src/modules/Fluid.lua" },
     { path = "/home/src/modules/Power.lua", url = github .. "/src/modules/Power.lua" },
     { path = "/home/src/programs/device_registry.lua", url = github .. "/src/programs/device_registry.lua" },
+    { path = "/home/src/programs/device_status.lua", url = github .. "/src/programs/device_status.lua" },
     { path = "/home/src/ui/HudOverlay.lua", url = github .. "/src/ui/HudOverlay.lua" },
     { path = "/home/src/ui/ScreenUI.lua", url = github .. "/src/ui/ScreenUI.lua" },
     { path = "/home/src/utils/Logger.lua", url = github .. "/src/utils/Logger.lua" },
