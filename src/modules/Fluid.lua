@@ -1,9 +1,10 @@
 -- ===========================================
 -- GTNH OC Automation System - Fluid.lua
--- Correct GT Machine fluid reading
+-- Log + Screen update
 -- ===========================================
 local component = require("component")
 local Logger = require("utils/Logger")
+local ScreenUI = require("ui/ScreenUI")
 
 local Fluid = {}
 local tanks = {}
@@ -21,7 +22,9 @@ function Fluid.update()
         local capacity = tank.getSteamCapacity()
         local percent = (amount / capacity) * 100
 
-        Logger.info(string.format("Tank [%s]: %.2f%% (%d / %d)", name, percent, amount, capacity))
+        local msg = string.format("%s: %.2f%% (%d / %d mB)", name, percent, amount, capacity)
+        Logger.info("Fluid: " .. msg)
+        ScreenUI.setFluidStatus(msg)
     end
 end
 
