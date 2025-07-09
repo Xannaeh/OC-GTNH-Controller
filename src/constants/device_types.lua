@@ -1,6 +1,6 @@
 return {
-    FluidStorage = "transposer",
-    UniversalTank = "gt_machine",
+    FluidStorage = "gt_machine",
+    UniversalTank = "transposer",
     PowerStorage = "gt_machine",
     BatteryBuffer = "gt_batterybuffer"
 }
