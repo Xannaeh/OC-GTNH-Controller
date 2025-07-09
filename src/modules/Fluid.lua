@@ -1,7 +1,8 @@
 -- ===========================================
 -- GTNH OC Automation System - Fluid.lua
--- Final version: Transposer, robust
+-- Final version using Transposer side 4
 -- ===========================================
+
 local component = require("component")
 local Logger = require("utils/Logger")
 local ScreenUI = require("ui/ScreenUI")
@@ -9,7 +10,8 @@ local ScreenUI = require("ui/ScreenUI")
 local Fluid = {}
 local transposer
 
-local TANK_SIDE = 0
+-- We confirmed side 4 works
+local TANK_SIDE = 4
 
 function Fluid.init(settings)
     Logger.info(string.format("Fluid: Using Transposer UUID: %s", settings.transposer))
@@ -28,39 +30,32 @@ function Fluid.update()
         return
     end
 
-    Logger.info("=== BEGIN FULL TRANSPOSER TANK DUMP ===")
+    local tankCount = transposer.getTankCount(TANK_SIDE)
+    Logger.info(string.format("Fluid: Side %d tank count: %s", TANK_SIDE, tostring(tankCount)))
 
-    for side = 0, 5 do
-        -- getTankCount
-        local count = transposer.getTankCount(side)
-        Logger.info(string.format("Side %d: getTankCount() = %s", side, tostring(count)))
-
-        -- getTankLevel
-        local level = transposer.getTankLevel(side)
-        Logger.info(string.format("Side %d: getTankLevel() = %s", side, tostring(level)))
-
-        -- getTankCapacity
-        local cap = transposer.getTankCapacity(side)
-        Logger.info(string.format("Side %d: getTankCapacity() = %s", side, tostring(cap)))
-
-        -- getFluidInTank
-        local tanks = transposer.getFluidInTank(side)
-        local text
-        if tanks and #tanks > 0 then
-            for idx, t in ipairs(tanks) do
-                text = string.format(
-                        "Side %d: getFluidInTank() Tank %d => name=%s, amount=%s, capacity=%s",
-                        side, idx, tostring(t.name), tostring(t.amount), tostring(t.capacity)
-                )
-                Logger.info(text)
-            end
-        else
-            Logger.info(string.format("Side %d: getFluidInTank() returned empty.", side))
-        end
+    if tankCount == 0 then
+        Logger.warn("Fluid: No tanks detected on side " .. TANK_SIDE)
+        ScreenUI.setFluidStatus("Fluid: No tanks detected.")
+        return
     end
 
-    Logger.info("=== END FULL TRANSPOSER TANK DUMP ===")
-end
+    local data = transposer.getFluidInTank(TANK_SIDE)
+    if not data or #data == 0 then
+        Logger.warn("Fluid: getFluidInTank returned empty.")
+        ScreenUI.setFluidStatus("Fluid: Empty tank.")
+        return
+    end
 
+    -- Always take first tank result
+    local fluid = data[1]
+    local name = fluid.name or "?"
+    local amount = fluid.amount or 0
+    local capacity = fluid.capacity or 1 -- avoid /0
+    local percent = (amount / capacity) * 100
+
+    local msg = string.format("Fluid: %s: %.1f%% (%d / %d mB)", name, percent, amount, capacity)
+    Logger.info(msg)
+    ScreenUI.setFluidStatus(msg)
+end
 
 return Fluid
