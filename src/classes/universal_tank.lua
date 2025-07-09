@@ -15,16 +15,16 @@ end
 function UniversalTank:autoDetectSide()
     local transposer = component.proxy(self.address)
     for s = 0, 5 do
-        local count = transposer.getTankCount(s)
-        if count and count > 0 then
-            local fluids = transposer.getFluidInTank(s)
-            if fluids and #fluids > 0 then
+        local tank = transposer.getFluidInTank(s)
+        if tank and #tank > 0 then
+            if tank[1].amount > 0 then
                 return s
             end
         end
     end
     return 0
 end
+
 
 function UniversalTank:readFluidStatus()
     local transposer = component.proxy(self.address)
