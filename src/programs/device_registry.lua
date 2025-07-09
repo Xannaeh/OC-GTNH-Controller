@@ -22,21 +22,39 @@ function DeviceRegistry:save()
     file:close()
 end
 
-function DeviceRegistry:listClasses()
+function DeviceRegistry:pickDeviceClass()
+    local keys = {}
+    local i = 1
     print("Available device classes:")
     for k, v in pairs(deviceTypes) do
-        print("-", k)
+        print(string.format("%d) %s", i, k))
+        keys[i] = k
+        i = i + 1
     end
+    io.write("Pick class number: ")
+    local choice = tonumber(io.read())
+    return keys[choice]
 end
 
-function DeviceRegistry:listAvailableAddresses(deviceType)
-    print("Available component addresses:")
+function DeviceRegistry:pickAddress(deviceType)
     local ctype = deviceTypes[deviceType]
-    for address, c in component.list(ctype) do
-        if not self:isAddressRegistered(address) then
-            print("-", address)
+    local addresses = {}
+    local i = 1
+    print("Available component addresses:")
+    for addr, _ in component.list(ctype) do
+        if not self:isAddressRegistered(addr) then
+            print(string.format("%d) %s", i, addr))
+            addresses[i] = addr
+            i = i + 1
         end
     end
+    if #addresses == 0 then
+        print("No available addresses for type: " .. deviceType)
+        return nil
+    end
+    io.write("Pick address number: ")
+    local num = tonumber(io.read())
+    return addresses[num]
 end
 
 function DeviceRegistry:isAddressRegistered(address)
@@ -90,20 +108,21 @@ function DeviceRegistry:run()
         io.write("> ")
         local choice = io.read()
         if choice == "1" then
-            self:listClasses()
+            self:pickDeviceClass() -- just show list for now
         elseif choice == "2" then
-            io.write("Device Class: ")
-            local class = io.read()
-            if deviceTypes[class] then
-                self:listAvailableAddresses(class)
-                io.write("Pick Address: ")
-                local addr = io.read()
-                io.write("Internal ID: ")
-                local id = io.read()
-                self:registerDevice(class, addr, id)
-                print("Device registered.")
+            local class = self:pickDeviceClass()
+            if class then
+                local addr = self:pickAddress(class)
+                if addr then
+                    io.write("Internal ID: ")
+                    local id = io.read()
+                    self:registerDevice(class, addr, id)
+                    print("Device registered.")
+                else
+                    print("No address picked.")
+                end
             else
-                print("Invalid class.")
+                print("Invalid class choice.")
             end
         elseif choice == "3" then
             self:listDevices()
