@@ -1,12 +1,11 @@
 -- ===========================================
 -- GTNH OC Automation System - Fluid.lua
--- Module for fluid tank monitoring
+-- Correct GT Machine fluid reading
 -- ===========================================
 local component = require("component")
 local Logger = require("utils/Logger")
 
 local Fluid = {}
-
 local tanks = {}
 
 function Fluid.init(settings)
@@ -18,12 +17,11 @@ end
 
 function Fluid.update()
     for name, tank in pairs(tanks) do
-        local fluid = tank.getFluidInTank(1)
-        local amount = fluid[1] and fluid[1].amount or 0
-        local capacity = fluid[1] and fluid[1].capacity or 1
-
+        local amount = tank.getStoredSteam()
+        local capacity = tank.getSteamCapacity()
         local percent = (amount / capacity) * 100
-        Logger.info(string.format("Tank [%s]: %.1f%% (%d / %d mB)", name, percent, amount, capacity))
+
+        Logger.info(string.format("Tank [%s]: %.2f%% (%d / %d)", name, percent, amount, capacity))
     end
 end
 
