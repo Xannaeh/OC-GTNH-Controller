@@ -1,6 +1,6 @@
 -- ===========================================
 -- GTNH OC Automation System - main.lua
--- Bootstrap and main loop
+-- Bootstrap and main loop with init/create events.log
 -- ===========================================
 
 -- Load standard libs
@@ -11,10 +11,19 @@ local os = require("os")
 
 -- Load custom modules
 package.path = "/home/src/?/init.lua;/home/src/?.lua;" .. package.path
-
-local Logger = require("utils/Logger")
 local Settings = require("config/settings")
 
+-- Ensure events.log exists
+local f = io.open(Settings.logFile, "r")
+if not f then
+    local w = io.open(Settings.logFile, "w")
+    if w then w:write("") w:close() end
+else
+    f:close()
+end
+
+-- Load modules
+local Logger = require("utils/Logger")
 local Power = require("modules/Power")
 local Fluid = require("modules/Fluid")
 local Environment = require("modules/Environment")
