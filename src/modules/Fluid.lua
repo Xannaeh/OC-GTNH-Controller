@@ -1,6 +1,6 @@
 -- ===========================================
 -- GTNH OC Automation System - Fluid.lua
--- Stronger probe: all method calls, force log errors too
+-- Hardcoded manual method tests
 -- ===========================================
 local component = require("component")
 local Logger = require("utils/Logger")
@@ -19,26 +19,43 @@ function Fluid.init(settings)
             Logger.error(string.format("Fluid Test: Proxy failed for tank [%s]!", name))
         end
     end
-    Logger.info("Fluid Test: Module initialized.")
+    Logger.info("Fluid Test: Manual Method Probe Mode Ready.")
 end
 
 function Fluid.update()
     for name, tank in pairs(tanks) do
-        Logger.info(string.format("Fluid Test: Dumping methods for [%s]...", name))
-        for k, v in pairs(tank) do
-            if type(v) == "function" then
-                local ok, result = pcall(v)
+        Logger.info(string.format("Fluid Test: BEGIN manual checks for [%s]...", name))
+
+        local function safeCall(methodName)
+            if tank[methodName] then
+                local ok, result = pcall(tank[methodName])
                 if ok then
-                    result = tostring(result)
-                    if #result > 100 then
-                        result = result:sub(1, 100) .. "..."
-                    end
-                    Logger.info(string.format("Fluid Test: [%s] %s() = %s", name, k, result))
+                    Logger.info(string.format("Fluid Test: [%s] %s() = %s", name, methodName, tostring(result)))
                 else
-                    Logger.warn(string.format("Fluid Test: [%s] %s() threw error: %s", name, k, result))
+                    Logger.warn(string.format("Fluid Test: [%s] %s() threw: %s", name, methodName, result))
                 end
+            else
+                Logger.warn(string.format("Fluid Test: [%s] %s() not found!", name, methodName))
             end
         end
+
+        -- 🔍 TEST THESE BY HAND:
+        safeCall("getStoredSteam")
+        safeCall("getSteamStored")
+        safeCall("getSteamMaxStored")
+        safeCall("getSteamCapacity")
+        safeCall("getStoredEU")
+        safeCall("getEUStored")
+        safeCall("getEUCapacity")
+        safeCall("getEUCapacityString")
+        safeCall("getStoredEUString")
+        safeCall("getWorkProgress")
+        safeCall("getWorkMaxProgress")
+        safeCall("getCoordinates")
+        safeCall("getName")
+        safeCall("isMachineActive")
+
+        Logger.info(string.format("Fluid Test: END manual checks for [%s].", name))
     end
 end
 
