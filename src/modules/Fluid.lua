@@ -6,7 +6,6 @@
 local component = require("component")
 local Logger = require("utils/Logger")
 local ScreenUI = require("ui/ScreenUI")
-local serialization = require("serialization")
 local fs = require("filesystem")
 
 local Fluid = {}
@@ -27,7 +26,6 @@ function Fluid.init(settings)
         TANK_SIDE = settings.tankSide
         Logger.info("Fluid: Using stored side: " .. TANK_SIDE)
     else
-        -- Auto detect once
         Logger.info("Fluid: No side in settings, scanning for valid tank...")
         for side = 0, 5 do
             local count = transposer.getTankCount(side)
@@ -38,7 +36,6 @@ function Fluid.init(settings)
                     settings.tankSide = side
                     Logger.info("Fluid: Found tank on side " .. side .. ". Saving to settings...")
 
-                    -- Ensure /home/src/config exists
                     if not fs.exists("/home/src/config") then
                         fs.makeDirectory("/home/src/config")
                     end
