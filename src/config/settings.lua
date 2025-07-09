@@ -8,7 +8,7 @@ local Settings = {}
 Settings.updateInterval = 2
 
 -- Power storage: GT Battery Buffer UUID
-Settings.powerDevice = "e3f5877c-5dce-4bb9-98d4-922084dedf59"
+Settings.powerDevice = "d23fb12d-a11a-4f54-b1d5-a47897ac0e74"
 
 -- Fluid Tanks: one GT machine UUID
 Settings.fluidTanks = {
