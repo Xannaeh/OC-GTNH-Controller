@@ -1,6 +1,6 @@
 -- ===========================================
 -- GTNH OC Automation System - settings.lua
--- Central config table for easy tuning
+-- Single source of truth for config
 -- ===========================================
 local Settings = {}
 
@@ -20,6 +20,6 @@ Settings.screenResolution = { width = 80, height = 25 }
 Settings.hudEnabled = true
 
 -- Log file
-Settings.logFile = "/logs/events.log"
+Settings.logFile = "/home/logs/events.log"  -- ✅ now uses /home/logs
 
 return Settings

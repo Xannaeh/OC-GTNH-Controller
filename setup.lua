@@ -21,7 +21,7 @@ local dirs = {
     "/home/src/ui",
     "/home/src/utils",
     "/home/src/config",
-    "/home/logs"
+    "/home/logs"   -- ✅ logs live here under /home
 }
 
 for _, dir in ipairs(dirs) do
@@ -58,6 +58,3 @@ else
 end
 
 print("✅ Install complete.")
-
-
-

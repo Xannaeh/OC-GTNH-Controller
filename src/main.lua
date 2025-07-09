@@ -1,36 +1,35 @@
 -- ===========================================
 -- GTNH OC Automation System - main.lua
--- Bootstrap and main loop with init/create events.log in-game
+-- Bootstrap and main loop with logs in /home/logs
 -- ===========================================
 
--- Prepend src folder to package.path so require() works
+-- Setup package path
 package.path = "/home/src/?/init.lua;/home/src/?.lua;" .. package.path
 
--- Load core libraries
-local fs       = require("filesystem")
-local io       = require("io")
-local os       = require("os")
+local fs = require("filesystem")
+local io = require("io")
+local os = require("os")
 local component = require("component")
-local computer  = require("computer")
-local event     = require("event")
+local computer = require("computer")
+local event = require("event")
 
--- Load game config
 local Settings = require("config/settings")
 
--- Ensure "/logs" directory exists in-game
-if not fs.exists("/logs") then
-    local ok, err = fs.makeDirectory("/logs")
+-- Ensure /home/logs exists
+if not fs.exists("/home/logs") then
+    local ok, err = fs.makeDirectory("/home/logs")
     if not ok then
-        error("Failed to create /logs directory: " .. tostring(err))
+        error("Failed to create /home/logs: " .. tostring(err))
     end
 end
 
--- Ensure the events.log file exists (create if missing)
+-- Ensure events.log exists inside /home/logs
 local f = io.open(Settings.logFile, "r")
 if not f then
     local w = io.open(Settings.logFile, "w")
     if w then
-        w:write("") w:close()
+        w:write("")
+        w:close()
     else
         error("Failed to create log file at " .. Settings.logFile)
     end
@@ -38,7 +37,7 @@ else
     f:close()
 end
 
--- Load and initialize modules
+-- Load modules
 local Logger      = require("utils/Logger")
 local Power       = require("modules/Power")
 local Fluid       = require("modules/Fluid")
