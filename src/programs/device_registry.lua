@@ -55,19 +55,29 @@ end
 
 function DeviceRegistry:pickAddress(deviceType)
     local ctype = deviceTypes[deviceType]
-    print("[DEBUG] deviceType:", deviceType)
+    print("[DEBUG] Requested deviceType:", deviceType)
     print("[DEBUG] Resolved ctype:", ctype)
 
-    print("[DEBUG] Full component list:")
+    print("[DEBUG] Full raw component.list():")
     for addr, t in component.list() do
-        print(" -", addr, t)
+        print(string.format("  %s  ->  %s", addr, t))
+    end
+
+    print("[DEBUG] Listing with filter component.list(ctype):")
+    for addr, t in component.list(ctype) do
+        print(string.format("  %s  ->  %s", addr, t))
+    end
+
+    -- Extra: confirm type() for each address in raw list
+    print("[DEBUG] Confirming component.type() for ALL:")
+    for addr, _ in component.list() do
+        print(string.format("  %s  => %s", addr, component.type(addr)))
     end
 
     local addresses = {}
     local i = 1
-    print("Available component addresses (ctype match):")
     for addr, t in component.list(ctype) do
-        print("[DEBUG] Found:", addr, "type:", t)
+        print("[DEBUG] Checking filtered addr:", addr, "ctype:", t)
         if not self:isAddressRegistered(addr) then
             print("[DEBUG] Not registered:", addr)
             print(string.format("%d) %s", i, addr))
