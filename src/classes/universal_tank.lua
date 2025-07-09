@@ -6,11 +6,15 @@ UniversalTank.__index = UniversalTank
 
 function UniversalTank:new(internalId, address, fluid, side, capacity, amount, display)
     local obj = FluidStorage.new(self, internalId, address, fluid, side, capacity, amount, display)
-    if not side or side == -1 then
+    -- Only detect if *side* is nil *and* NO side saved
+    if not obj.side or obj.side == -1 then
+        print("[DEBUG] Running autoDetectSide()")
         obj.side = obj:autoDetectSide()
+        print("[DEBUG] Side detected:", obj.side)
     end
     return obj
 end
+
 
 function UniversalTank:autoDetectSide()
     local transposer = component.proxy(self.address)
