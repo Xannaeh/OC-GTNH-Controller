@@ -55,13 +55,21 @@ end
 
 function DeviceRegistry:pickAddress(deviceType)
     local ctype = deviceTypes[deviceType]
+    print("[DEBUG] deviceType:", deviceType)
+    print("[DEBUG] Resolved ctype:", ctype)
+
+    print("[DEBUG] Full component list:")
+    for addr, t in component.list() do
+        print(" -", addr, t)
+    end
+
     local addresses = {}
     local i = 1
-    print("Available component addresses:")
-    for addr, _ in component.list(ctype) do
-        print("[DEBUG] Checking:", addr)
+    print("Available component addresses (ctype match):")
+    for addr, t in component.list(ctype) do
+        print("[DEBUG] Found:", addr, "type:", t)
         if not self:isAddressRegistered(addr) then
-            print("[DEBUG] Unregistered, adding option:", addr)
+            print("[DEBUG] Not registered:", addr)
             print(string.format("%d) %s", i, addr))
             addresses[i] = addr
             i = i + 1
@@ -74,6 +82,7 @@ function DeviceRegistry:pickAddress(deviceType)
         print("No available addresses for type: " .. deviceType)
         return nil
     end
+
     io.write("Pick address number: ")
     local num = tonumber(io.read())
     if num and addresses[num] then
@@ -83,6 +92,7 @@ function DeviceRegistry:pickAddress(deviceType)
         return nil
     end
 end
+
 
 function DeviceRegistry:isAddressRegistered(address)
     for _, device in pairs(self.devices) do
