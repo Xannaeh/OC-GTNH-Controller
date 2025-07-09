@@ -17,10 +17,13 @@ end
 -- Directories
 local dirs = {
     "/home/src",
+    "/home/src/classes",
+    "/home/src/config",
+    "/home/src/constants",
     "/home/src/modules",
+    "/home/src/programs",
     "/home/src/ui",
     "/home/src/utils",
-    "/home/src/config",
     "/home/logs"   -- ✅ logs live here under /home
 }
 
@@ -30,13 +33,20 @@ end
 
 -- Files (non-persistent)
 local files = {
-    { path = "/home/src/main.lua", url = github .. "/src/main.lua" },
-    { path = "/home/src/modules/Power.lua", url = github .. "/src/modules/Power.lua" },
-    { path = "/home/src/modules/Fluid.lua", url = github .. "/src/modules/Fluid.lua" },
+    { path = "/home/src/classes/battery_buffer.lua", url = github .. "/src/classes/battery_buffer.lua" },
+    { path = "/home/src/classes/fluid_storage.lua", url = github .. "/src/classes/fluid_storage.lua" },
+    { path = "/home/src/classes/power_storage.lua", url = github .. "/src/classes/power_storage.lua" },
+    { path = "/home/src/classes/universal_tank.lua", url = github .. "/src/classes/universal_tank.lua" },
+    { path = "/home/src/constants/device_types.lua", url = github .. "/src/constants/device_types.lua" },
     { path = "/home/src/modules/Environment.lua", url = github .. "/src/modules/Environment.lua" },
-    { path = "/home/src/ui/ScreenUI.lua", url = github .. "/src/ui/ScreenUI.lua" },
+    { path = "/home/src/modules/Fluid.lua", url = github .. "/src/modules/Fluid.lua" },
+    { path = "/home/src/modules/Power.lua", url = github .. "/src/modules/Power.lua" },
+    { path = "/home/src/programs/device_registry.lua", url = github .. "/src/programs/device_registry.lua" },
     { path = "/home/src/ui/HudOverlay.lua", url = github .. "/src/ui/HudOverlay.lua" },
-    { path = "/home/src/utils/Logger.lua", url = github .. "/src/utils/Logger.lua" }
+    { path = "/home/src/ui/ScreenUI.lua", url = github .. "/src/ui/ScreenUI.lua" },
+    { path = "/home/src/utils/Logger.lua", url = github .. "/src/utils/Logger.lua" },
+    { path = "/home/src/utils/StateHelper.lua", url = github .. "/src/utils/StateHelper.lua" },
+    { path = "/home/src/main.lua", url = github .. "/src/main.lua" },
 }
 
 for _, f in ipairs(files) do
@@ -45,7 +55,9 @@ end
 
 -- Persistent files
 local persistent = {
-    { path = "/home/src/config/settings.lua", url = github .. "/src/config/settings.lua" }
+    { path = "/home/src/config/devices.cfg", url = github .. "/src/config/devices.cfg" },
+    { path = "/home/src/config/settings.lua", url = github .. "/src/config/settings.lua" },
+    { path = "/home/src/config/state.lua", url = github .. "/src/config/state.lua" }
 }
 
 if replace == "Y" then
