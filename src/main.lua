@@ -10,6 +10,8 @@ local event = require("event")
 local os = require("os")
 
 -- Load custom modules
+package.path = "/home/src/?/init.lua;/home/src/?.lua;" .. package.path
+
 local Logger = require("utils/Logger")
 local Settings = require("config/settings")
 
