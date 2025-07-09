@@ -1,19 +1,95 @@
--- main.lua
--- ... existing boot, log rotation ...
+-- ===========================================
+-- GTNH OC Automation System - main.lua
+-- Bootstrap and program selector
+-- ===========================================
 
+package.path = "/home/src/?/init.lua;/home/src/?.lua;" .. package.path
+
+local fs = require("filesystem")
+local io = require("io")
+local os = require("os")
+local component = require("component")
+local computer = require("computer")
+local event = require("event")
+
+local Settings = require("config/settings")
+local Logger = require("utils/Logger")
 local Power = require("modules/Power")
 local Fluid = require("modules/Fluid")
--- ... other modules ...
+local Environment = require("modules/Environment")
+local ScreenUI = require("ui/ScreenUI")
+local HudOverlay = require("ui/HudOverlay")
+local DeviceRegistry = require("programs/device_registry")
 
-Power.init(Settings)
-Fluid.init(Settings)
--- ... init others ...
+-- === Ensure /home/logs exists ===
+if not fs.exists("/home/logs") then
+    local ok, err = fs.makeDirectory("/home/logs")
+    if not ok then
+        error("Failed to create /home/logs: " .. tostring(err))
+    end
+end
 
-while true do
-    ScreenUI.resetLines()  -- clear lines each tick
-    Power.update()
-    Fluid.update()
-    -- other updates ...
-    ScreenUI.render()
-    os.sleep(Settings.updateInterval)
+-- === Log rotation ===
+if fs.exists(Settings.logFile) then
+    local timestamp = os.date("%Y%m%d_%H%M%S")
+    local newName = "/home/logs/events_" .. timestamp .. ".log"
+    local ok, err = fs.rename(Settings.logFile, newName)
+    if not ok then
+        io.write("Failed to rotate log: " .. tostring(err) .. "\n")
+    else
+        io.write("Previous log rotated to " .. newName .. "\n")
+    end
+end
+
+-- Create fresh events.log
+local f = io.open(Settings.logFile, "w")
+if f then f:close() else error("Could not create fresh events.log!") end
+
+-- === Main loop ===
+local function runMainLoop()
+    Logger.info("System booting up...")
+
+    Power.init(Settings)
+    Fluid.init(Settings)
+    Environment.init(Settings)
+    ScreenUI.init(Settings)
+    HudOverlay.init(Settings)
+
+    Logger.info("All modules initialized.")
+
+    while true do
+        local ok, err = pcall(function()
+            Power.update()
+            Fluid.update()
+            Environment.update()
+            ScreenUI.update()
+            HudOverlay.update()
+        end)
+
+        if not ok then
+            Logger.error("Main loop error: " .. tostring(err))
+        end
+
+        os.sleep(Settings.updateInterval or 2)
+    end
+end
+
+-- === Device Registry ===
+local function runDeviceRegistry()
+    DeviceRegistry:run()
+end
+
+-- === Selector ===
+print("Select program to run:")
+print("1) Main Automation Loop")
+print("2) Device Registry CLI")
+io.write("> ")
+local choice = io.read()
+
+if choice == "1" then
+    runMainLoop()
+elseif choice == "2" then
+    runDeviceRegistry()
+else
+    print("Invalid choice. Exiting.")
 end
