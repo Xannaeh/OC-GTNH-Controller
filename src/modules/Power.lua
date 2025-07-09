@@ -1,9 +1,10 @@
 -- ===========================================
 -- GTNH OC Automation System - Power.lua
--- Correct GT Battery Buffer reading with debug logs
+-- Log + Screen update
 -- ===========================================
 local component = require("component")
 local Logger = require("utils/Logger")
+local ScreenUI = require("ui/ScreenUI")
 
 local Power = {}
 local powerDevice
@@ -12,7 +13,6 @@ function Power.init(settings)
     if settings.powerDevice then
         Logger.info("Power: Trying to proxy UUID: " .. settings.powerDevice)
         powerDevice = component.proxy(settings.powerDevice)
-
         if powerDevice then
             Logger.info("Power: Proxy created for GT Battery Buffer.")
         else
@@ -50,7 +50,10 @@ function Power.update()
     end
 
     local percent = (current / capacity) * 100
-    Logger.info(string.format("Power: %.2f%% (%d / %d EU)", percent, current, capacity))
+
+    local msg = string.format("%.2f%% (%d / %d EU)", percent, current, capacity)
+    Logger.info("Power: " .. msg)
+    ScreenUI.setPowerStatus(msg)
 end
 
 return Power

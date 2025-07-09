@@ -1,14 +1,16 @@
 -- ===========================================
 -- GTNH OC Automation System - ScreenUI.lua
--- Improved screen UI with clear and redraw
+-- Draw Power + Fluid status on screen
 -- ===========================================
 local component = require("component")
 local term = require("term")
 local gpu = component.gpu
-local Settings = require("config/settings")
 local Logger = require("utils/Logger")
 
 local ScreenUI = {}
+
+local latestPower = "?"
+local latestFluid = "?"
 
 function ScreenUI.init(settings)
     gpu.setResolution(settings.screenResolution.width, settings.screenResolution.height)
@@ -17,15 +19,27 @@ function ScreenUI.init(settings)
 end
 
 function ScreenUI.update()
-    -- Clear the full screen
+    -- Clear screen
     term.clear()
     term.setCursor(1, 1)
-
-    -- Redraw status lines
     term.write("GTNH OC Automation: Running...")
 
-    -- Optionally show more info later:
-    -- e.g. term.setCursor(1,2); term.write("Power: <value>")
+    -- Show Power
+    term.setCursor(1, 3)
+    term.write("Power: " .. latestPower)
+
+    -- Show Fluid
+    term.setCursor(1, 5)
+    term.write("Fluid: " .. latestFluid)
+end
+
+-- These setters will be called by Power/Fluid modules:
+function ScreenUI.setPowerStatus(text)
+    latestPower = text
+end
+
+function ScreenUI.setFluidStatus(text)
+    latestFluid = text
 end
 
 return ScreenUI
