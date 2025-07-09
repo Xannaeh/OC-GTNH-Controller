@@ -22,5 +22,7 @@ Settings.hudEnabled = true
 Settings.screenResolution = { width = 80, height = 25 }
 Settings.hudEnabled = true
 
+-- Log file
+Settings.logFile = "/home/logs/events.log"
 
 return Settings
