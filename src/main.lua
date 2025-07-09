@@ -1,9 +1,8 @@
 -- ===========================================
 -- GTNH OC Automation System - main.lua
--- Bootstrap and main loop with logs in /home/logs
+-- Bootstrap and main loop with log rotation
 -- ===========================================
 
--- Setup package path
 package.path = "/home/src/?/init.lua;/home/src/?.lua;" .. package.path
 
 local fs = require("filesystem")
@@ -23,39 +22,38 @@ if not fs.exists("/home/logs") then
     end
 end
 
--- Ensure events.log exists inside /home/logs
-local f = io.open(Settings.logFile, "r")
-if not f then
-    local w = io.open(Settings.logFile, "w")
-    if w then
-        w:write("")
-        w:close()
+-- === Log rotation ===
+if fs.exists(Settings.logFile) then
+    local timestamp = os.date("%Y%m%d_%H%M%S")
+    local newName = "/home/logs/events_" .. timestamp .. ".log"
+    local ok, err = fs.rename(Settings.logFile, newName)
+    if not ok then
+        io.write("Failed to rotate log: " .. tostring(err) .. "\n")
     else
-        error("Failed to create log file at " .. Settings.logFile)
+        io.write("Previous log rotated to " .. newName .. "\n")
     end
-else
-    f:close()
 end
 
--- Load modules
-local Logger      = require("utils/Logger")
-local Power       = require("modules/Power")
-local Fluid       = require("modules/Fluid")
+-- Create fresh events.log
+local f = io.open(Settings.logFile, "w")
+if f then f:close() else error("Could not create fresh events.log!") end
+
+-- Now load modules
+local Logger = require("utils/Logger")
+local Power = require("modules/Power")
+local Fluid = require("modules/Fluid")
 local Environment = require("modules/Environment")
-local ScreenUI    = require("ui/ScreenUI")
-local HudOverlay  = require("ui/HudOverlay")
+local ScreenUI = require("ui/ScreenUI")
+local HudOverlay = require("ui/HudOverlay")
 
 Logger.info("System booting up...")
-
 Power.init(Settings)
 Fluid.init(Settings)
 Environment.init(Settings)
 ScreenUI.init(Settings)
 HudOverlay.init(Settings)
-
 Logger.info("All modules initialized.")
 
--- Main update loop
 while true do
     local ok, err = pcall(function()
         Power.update()
