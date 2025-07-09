@@ -24,33 +24,43 @@ end
 
 function Fluid.update()
     if not transposer then
-        Logger.warn("Fluid: No transposer proxy!")
+        Logger.warn("Fluid: No Transposer proxy available.")
         return
     end
 
-    local tankCount = transposer.getTankCount(TANK_SIDE)
-    Logger.info(string.format("Fluid: Tank count on side %d: %d", TANK_SIDE, tankCount))
+    Logger.info("=== BEGIN FULL TRANSPOSER TANK DUMP ===")
 
-    if tankCount == 0 then
-        Logger.warn("Fluid: No tanks detected.")
-        ScreenUI.setFluidStatus("Fluid: No tanks found.")
-        return
-    end
+    for side = 0, 5 do
+        -- getTankCount
+        local count = transposer.getTankCount(side)
+        Logger.info(string.format("Side %d: getTankCount() = %s", side, tostring(count)))
 
-    for idx = 1, tankCount do
-        local fluidData = transposer.getFluidInTank(TANK_SIDE, idx)
-        if fluidData then
-            local name = fluidData.name or "?"
-            local amount = fluidData.amount or 0
-            local capacity = fluidData.capacity or 0
-            local percent = (capacity > 0) and (amount / capacity) * 100 or 0
-            local msg = string.format("Tank %d: %.1f%% (%d/%d mB) %s", idx, percent, amount, capacity, name)
-            Logger.info("Fluid: " .. msg)
-            ScreenUI.setFluidStatus(msg)
+        -- getTankLevel
+        local level = transposer.getTankLevel(side)
+        Logger.info(string.format("Side %d: getTankLevel() = %s", side, tostring(level)))
+
+        -- getTankCapacity
+        local cap = transposer.getTankCapacity(side)
+        Logger.info(string.format("Side %d: getTankCapacity() = %s", side, tostring(cap)))
+
+        -- getFluidInTank
+        local tanks = transposer.getFluidInTank(side)
+        local text
+        if tanks and #tanks > 0 then
+            for idx, t in ipairs(tanks) do
+                text = string.format(
+                        "Side %d: getFluidInTank() Tank %d => name=%s, amount=%s, capacity=%s",
+                        side, idx, tostring(t.name), tostring(t.amount), tostring(t.capacity)
+                )
+                Logger.info(text)
+            end
         else
-            Logger.warn(string.format("Fluid: Tank %d returned no data.", idx))
+            Logger.info(string.format("Side %d: getFluidInTank() returned empty.", side))
         end
     end
+
+    Logger.info("=== END FULL TRANSPOSER TANK DUMP ===")
 end
+
 
 return Fluid
