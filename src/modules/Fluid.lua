@@ -1,61 +1,47 @@
 -- ===========================================
 -- GTNH OC Automation System - Fluid.lua
--- Hardcoded manual method tests
+-- Fluid monitoring using Transposer
 -- ===========================================
 local component = require("component")
 local Logger = require("utils/Logger")
+local ScreenUI = require("ui/ScreenUI")
 
 local Fluid = {}
-local tanks = {}
+local transposer
+
+-- Which side the tank is on (0–5)
+local TANK_SIDE = 0
 
 function Fluid.init(settings)
-    for name, address in pairs(settings.fluidTanks) do
-        Logger.info(string.format("Fluid Test: Trying to proxy tank [%s] UUID: %s", name, address))
-        local tank = component.proxy(address)
-        if tank then
-            Logger.info(string.format("Fluid Test: Proxy created for tank [%s].", name))
-            tanks[name] = tank
-        else
-            Logger.error(string.format("Fluid Test: Proxy failed for tank [%s]!", name))
-        end
+    Logger.info(string.format("Fluid: Trying to proxy Transposer UUID: %s", settings.transposer))
+    transposer = component.proxy(settings.transposer)
+    if transposer then
+        Logger.info("Fluid: Proxy created for Transposer.")
+    else
+        Logger.error("Fluid: Proxy failed — Transposer not found!")
     end
-    Logger.info("Fluid Test: Manual Method Probe Mode Ready.")
+    Logger.info("Fluid module initialized.")
 end
 
 function Fluid.update()
-    for name, tank in pairs(tanks) do
-        Logger.info(string.format("Fluid Test: BEGIN manual checks for [%s]...", name))
+    if not transposer then
+        Logger.warn("Fluid: No Transposer proxy available.")
+        return
+    end
 
-        local function safeCall(methodName)
-            if tank[methodName] then
-                local ok, result = pcall(tank[methodName])
-                if ok then
-                    Logger.info(string.format("Fluid Test: [%s] %s() = %s", name, methodName, tostring(result)))
-                else
-                    Logger.warn(string.format("Fluid Test: [%s] %s() threw: %s", name, methodName, result))
-                end
-            else
-                Logger.warn(string.format("Fluid Test: [%s] %s() not found!", name, methodName))
-            end
-        end
+    local tankInfo = transposer.getTankInfo(TANK_SIDE)
+    if not tankInfo or #tankInfo == 0 then
+        Logger.warn("Fluid: getTankInfo returned no data.")
+        return
+    end
 
-        -- 🔍 TEST THESE BY HAND:
-        safeCall("getStoredSteam")
-        safeCall("getSteamStored")
-        safeCall("getSteamMaxStored")
-        safeCall("getSteamCapacity")
-        safeCall("getStoredEU")
-        safeCall("getEUStored")
-        safeCall("getEUCapacity")
-        safeCall("getEUCapacityString")
-        safeCall("getStoredEUString")
-        safeCall("getWorkProgress")
-        safeCall("getWorkMaxProgress")
-        safeCall("getCoordinates")
-        safeCall("getName")
-        safeCall("isMachineActive")
-
-        Logger.info(string.format("Fluid Test: END manual checks for [%s].", name))
+    for idx, tank in ipairs(tankInfo) do
+        local amount = tank.amount or 0
+        local capacity = tank.capacity or 0
+        local percent = (capacity > 0) and (amount / capacity) * 100 or 0
+        local msg = string.format("Tank %d: %.2f%% (%d / %d mB)", idx, percent, amount, capacity)
+        Logger.info("Fluid: " .. msg)
+        ScreenUI.setFluidStatus(msg)
     end
 end
 
