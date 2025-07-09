@@ -1,57 +1,84 @@
 -- ===========================================
 -- GTNH OC Automation System - Fluid.lua
--- Final version using Transposer side 4
+-- Auto-detects tank side once, saves to settings
 -- ===========================================
 
 local component = require("component")
 local Logger = require("utils/Logger")
+local serialization = require("serialization")
 local ScreenUI = require("ui/ScreenUI")
 
 local Fluid = {}
 local transposer
-
--- We confirmed side 4 works
-local TANK_SIDE = 4
+local TANK_SIDE = nil
 
 function Fluid.init(settings)
-    Logger.info(string.format("Fluid: Using Transposer UUID: %s", settings.transposer))
     transposer = component.proxy(settings.transposer)
-    if transposer then
-        Logger.info("Fluid: Transposer proxy created.")
-    else
+    if not transposer then
         Logger.error("Fluid: Transposer not found!")
+        return
     end
-    Logger.info("Fluid module ready.")
+
+    Logger.info(string.format("Fluid: Using Transposer UUID: %s", settings.transposer))
+
+    -- Use stored side if available
+    if settings.tankSide then
+        TANK_SIDE = settings.tankSide
+        Logger.info("Fluid: Using stored side: " .. TANK_SIDE)
+    else
+        -- Auto detect once
+        Logger.info("Fluid: No side in settings, scanning for valid tank...")
+        for side = 0, 5 do
+            local count = transposer.getTankCount(side)
+            if count and count > 0 then
+                local fluids = transposer.getFluidInTank(side)
+                if fluids and #fluids > 0 then
+                    TANK_SIDE = side
+                    settings.tankSide = side
+                    Logger.info("Fluid: Found tank on side " .. side .. ". Saving to settings...")
+                    -- Save settings to file immediately
+                    local file = io.open("/home/src/config/settings.lua", "w")
+                    file:write("local Settings = {}\n\n")
+                    file:write(string.format("Settings.transposer = \"%s\"\n", settings.transposer))
+                    file:write(string.format("Settings.tankSide = %d\n", side))
+                    file:write(string.format("Settings.updateInterval = %s\n", tostring(settings.updateInterval)))
+                    file:write(string.format("Settings.powerDevice = \"%s\"\n", settings.powerDevice))
+                    file:write(string.format("Settings.fluidTanks = { main = \"%s\" }\n", settings.fluidTanks.main))
+                    file:write(string.format("Settings.logFile = \"%s\"\n", settings.logFile))
+                    file:write("return Settings\n")
+                    file:close()
+                    Logger.info("Fluid: Settings saved.")
+                    break
+                end
+            end
+        end
+
+        if not TANK_SIDE then
+            Logger.warn("Fluid: No valid tank found on any side.")
+        end
+    end
+
+    Logger.info("Fluid module ready. Using side: " .. tostring(TANK_SIDE))
 end
 
 function Fluid.update()
-    if not transposer then
-        Logger.warn("Fluid: No Transposer proxy available.")
+    if not transposer or not TANK_SIDE then
+        Logger.warn("Fluid: Not ready or no side set.")
         return
     end
 
-    local tankCount = transposer.getTankCount(TANK_SIDE)
-    Logger.info(string.format("Fluid: Side %d tank count: %s", TANK_SIDE, tostring(tankCount)))
-
-    if tankCount == 0 then
-        Logger.warn("Fluid: No tanks detected on side " .. TANK_SIDE)
-        ScreenUI.setFluidStatus("Fluid: No tanks detected.")
+    local fluids = transposer.getFluidInTank(TANK_SIDE)
+    if not fluids or #fluids == 0 then
+        Logger.warn("Fluid: Tank empty or not detected.")
+        ScreenUI.setFluidStatus("Fluid: Empty.")
         return
     end
 
-    local data = transposer.getFluidInTank(TANK_SIDE)
-    if not data or #data == 0 then
-        Logger.warn("Fluid: getFluidInTank returned empty.")
-        ScreenUI.setFluidStatus("Fluid: Empty tank.")
-        return
-    end
-
-    -- Always take first tank result
-    local fluid = data[1]
-    local name = fluid.name or "?"
+    local fluid = fluids[1]
     local amount = fluid.amount or 0
-    local capacity = fluid.capacity or 1 -- avoid /0
+    local capacity = fluid.capacity or 1
     local percent = (amount / capacity) * 100
+    local name = fluid.name or "?"
 
     local msg = string.format("Fluid: %s: %.1f%% (%d / %d mB)", name, percent, amount, capacity)
     Logger.info(msg)
