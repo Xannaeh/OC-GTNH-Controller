@@ -4,21 +4,22 @@
 -- ===========================================
 local Settings = {}
 
--- Update loop interval in seconds
+-- Update interval
 Settings.updateInterval = 2
 
--- Device addresses (example)
-Settings.powerDevice = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+-- Power storage: GT Battery Buffer UUID
+Settings.powerDevice = "afb812d4-a11f-498b-8f75-4d3cdb62e7f4"
+
+-- Fluid Tanks: one GT machine UUID
 Settings.fluidTanks = {
-    nitrogen = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    oxygen = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    main = "a45c6d6e-930c-41ef-a98b-97869ad1d667"
 }
 
--- Display config
+-- Screen settings
 Settings.screenResolution = { width = 80, height = 25 }
 Settings.hudEnabled = true
 
--- Logging
+-- Log file
 Settings.logFile = "/logs/events.log"
 
 return Settings
