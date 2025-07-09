@@ -1,3 +1,4 @@
+-- device status
 local serialization = require("serialization")
 local component = require("component")
 local UniversalTank = require("classes.universal_tank")

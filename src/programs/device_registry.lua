@@ -1,3 +1,4 @@
+-- device registry
 local component = require("component")
 local serialization = require("serialization")
 local deviceTypes = require("constants.device_types")
@@ -88,13 +89,25 @@ function DeviceRegistry:isAddressRegistered(address)
 end
 
 function DeviceRegistry:registerDevice(deviceType, address, internalId)
+    local side = nil
+
+    if deviceType == "UniversalTank" then
+        local UniversalTank = require("classes.universal_tank")
+        local tempTank = UniversalTank:new(internalId, address)
+        side = tempTank:autoDetectSide()
+        print("[DEBUG] Detected side for UniversalTank:", side)
+    end
+
     table.insert(self.devices, {
         type = deviceType,
         address = address,
-        internalId = internalId
+        internalId = internalId,
+        side = side  -- ✅ Save it!
     })
+
     self:save()
 end
+
 
 function DeviceRegistry:listDevices()
     print("Registered devices:")

@@ -1,3 +1,4 @@
+-- universal tank
 local component = require("component")
 local FluidStorage = require("classes.fluid_storage")
 
@@ -6,16 +7,13 @@ UniversalTank.__index = UniversalTank
 
 function UniversalTank:new(internalId, address, fluid, side, capacity, amount, display)
     local obj = FluidStorage.new(self, internalId, address, fluid, side, capacity, amount, display)
-    -- Only detect if *side* is nil *and* NO side saved
-    print("[DEBUG] Pre Running autoDetectSide()")
-    if not obj.side or obj.side == -1 then
-        print("[DEBUG] Running autoDetectSide()")
+    if obj.side == nil then
+        print("[DEBUG] Detected NO side, running autoDetectSide")
         obj.side = obj:autoDetectSide()
-        print("[DEBUG] Side detected:", obj.side)
     end
-    print("[DEBUG] Post Running autoDetectSide()")
     return obj
 end
+
 
 
 function UniversalTank:autoDetectSide()
