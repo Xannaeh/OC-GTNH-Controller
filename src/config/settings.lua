@@ -1,25 +1,13 @@
--- ===========================================
--- GTNH OC Automation System - settings.lua
--- Single source of truth for config
--- ===========================================
 local Settings = {}
 
--- Update interval
 Settings.updateInterval = 2
 
--- Power storage: GT Battery Buffer UUID
-Settings.powerDevice = "d23fb12d-a11a-4f54-b1d5-a47897ac0e74"
+-- main lists just hold the first/defaults; extras go in state.lua
+Settings.powerDevice = {"d23fb12d-a11a-4f54-b1d5-a47897ac0e74"}
+Settings.transposers = {"0b863cd7-daba-47e3-bc46-5074614a7782"}
 
--- Fluid Tanks: one GT machine UUID
-Settings.fluidTanks = { main = "a45c6d6e-930c-41ef-a98b-97869ad1d667" }
-Settings.transposer = "0b863cd7-daba-47e3-bc46-5074614a7782"
-Settings.tankSide = 4
-
--- Screen settings
 Settings.screenResolution = { width = 80, height = 25 }
 Settings.hudEnabled = true
-
--- Log file
 Settings.logFile = "/home/logs/events.log"
 
 return Settings

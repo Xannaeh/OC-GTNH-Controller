@@ -1,83 +1,64 @@
 local component = require("component")
 local Logger = require("utils/Logger")
 local ScreenUI = require("ui/ScreenUI")
-local StateHelper = require("utils/StateHelper")
 local State = require("config/state")
 
 local Fluid = {}
-local transposer
-local TANK_SIDE = nil
-local STATE_PATH = "/home/src/config/state.lua"
+Fluid.units = {}
+
+local function initTransposers()
+    for _, info in ipairs(State.transposers) do
+        local proxy = component.proxy(info.uuid)
+        if proxy then
+            table.insert(Fluid.units, {
+                proxy = proxy,
+                side = info.side or 0,
+                id = info.uuid
+            })
+            Logger.info(("Fluid: found transposer %s (side %s)"):format(info.uuid, info.side or "?"))
+        else
+            Logger.error(("Fluid: could not init transposer %s"):format(info.uuid))
+        end
+    end
+end
 
 function Fluid.init(settings)
-    transposer = component.proxy(settings.transposer)
-    if not transposer then
-        Logger.error("Fluid: Transposer not found!")
-        return
-    end
-
-    Logger.info(string.format("Fluid: Using Transposer UUID: %s", settings.transposer))
-
-    local known = nil
-    for _, t in ipairs(State.tanks or {}) do
-        if t.uuid == settings.fluidTanks.main then
-            known = t.side
-            break
-        end
-    end
-
-    if known then
-        TANK_SIDE = known
-        Logger.info("Fluid: Using cached side: " .. TANK_SIDE)
-    else
-        Logger.info("Fluid: Scanning for valid tank...")
-        for side = 0, 5 do
-            local count = transposer.getTankCount(side)
-            if count and count > 0 then
-                local fluids = transposer.getFluidInTank(side)
-                if fluids and #fluids > 0 then
-                    TANK_SIDE = side
-                    table.insert(State.tanks, { uuid = settings.fluidTanks.main, side = side })
-                    local ok, err = StateHelper.save(State, STATE_PATH)
-                    if ok then
-                        Logger.info("Fluid: Detected side " .. side .. " saved to state.")
-                    else
-                        Logger.error("Fluid: Failed to save state: " .. tostring(err))
-                    end
-                    break
-                end
-            end
-        end
-
-        if not TANK_SIDE then
-            Logger.warn("Fluid: No valid tank found on any side.")
-        end
-    end
-
-    Logger.info("Fluid module ready. Using side: " .. tostring(TANK_SIDE))
+    initTransposers()
+    Logger.info(("Fluid: %d transposer units ready"):format(#Fluid.units))
 end
 
 function Fluid.update()
-    if not transposer or not TANK_SIDE then
-        Logger.warn("Fluid: Not ready or no side set.")
-        return
+    local statuses = {}
+    for _, unit in ipairs(Fluid.units) do
+        local t = unit.proxy
+        local s = unit.side
+        local count = t.getTankCount(s)
+        local status = { id = unit.id }
+
+        if count > 0 then
+            local fluids = t.getFluidInTank(s, 1)  -- only first tank
+            if fluids and fluids.amount then
+                status.name, status.amount, status.capacity = fluids.name, fluids.amount, fluids.capacity
+                status.percent = (fluids.amount / fluids.capacity) * 100
+            end
+        end
+
+        statuses[#statuses + 1] = status
     end
 
-    local fluids = transposer.getFluidInTank(TANK_SIDE)
-    if not fluids or #fluids == 0 then
-        Logger.warn("Fluid: Tank empty or not detected.")
-        ScreenUI.setFluidStatus("Fluid: Empty.")
-        return
+    -- combine into UI
+    local summary = {}
+    for _, st in ipairs(statuses) do
+        if st.name then
+            table.insert(summary, string.format("[%s]: %s %.1f%% (%d/%d)",
+                    st.id:sub(1,5), st.name, st.percent, st.amount, st.capacity))
+        else
+            table.insert(summary, ("[%s]: empty or no data"):format(st.id:sub(1,5)))
+        end
     end
 
-    local fluid = fluids[1]
-    local amount = fluid.amount or 0
-    local capacity = fluid.capacity or 1
-    local percent = (amount / capacity) * 100
-    local name = fluid.name or "?"
-
-    local msg = string.format("Fluid: %s: %.1f%% (%d / %d mB)", name, percent, amount, capacity)
-    Logger.info(msg)
+    local msg = table.concat(summary, " | ")
+    Logger.info("Fluid: "..msg)
     ScreenUI.setFluidStatus(msg)
 end
 
