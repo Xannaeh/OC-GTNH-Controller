@@ -1,24 +1,31 @@
 -- ===========================================
 -- GTNH OC Automation System - HudOverlay.lua
--- Safe OpenGlasses HUD overlay
+-- Safe OpenGlasses HUD overlay with bulletproof checks
 -- ===========================================
 local component = require("component")
 local Logger = require("utils/Logger")
 
-local glasses = component.isAvailable("glasses") and component.glasses or nil
-
 local HudOverlay = {}
 
+local glasses = nil
+
 function HudOverlay.init(settings)
-    if glasses then
-        Logger.info("HUD overlay initialized.")
+    if component.isAvailable("glasses") then
+        glasses = component.glasses
+        -- Confirm it has addText capability
+        if glasses and glasses.addText then
+            Logger.info("HUD overlay initialized (OpenGlasses linked).")
+        else
+            Logger.warn("OpenGlasses found but no addText function (are you paired?)")
+            glasses = nil
+        end
     else
-        Logger.warn("HUD overlay skipped: OpenGlasses not found or not paired.")
+        Logger.warn("HUD overlay skipped: OpenGlasses Terminal not found.")
     end
 end
 
 function HudOverlay.update()
-    if glasses then
+    if glasses and glasses.addText then
         glasses.removeAll()
         glasses.addText(1, 1, "OC GTNH Base HUD", 0xFF00FF)
     end
