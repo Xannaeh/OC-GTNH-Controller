@@ -1,16 +1,13 @@
--- ===========================================
--- GTNH OC Automation System - Fluid.lua
--- Auto-detects tank side once, saves to settings
--- ===========================================
-
 local component = require("component")
 local Logger = require("utils/Logger")
 local ScreenUI = require("ui/ScreenUI")
-local fs = require("filesystem")
+local StateHelper = require("utils/StateHelper")
+local State = require("config/state")
 
 local Fluid = {}
 local transposer
 local TANK_SIDE = nil
+local STATE_PATH = "/home/src/config/state.lua"
 
 function Fluid.init(settings)
     transposer = component.proxy(settings.transposer)
@@ -21,44 +18,32 @@ function Fluid.init(settings)
 
     Logger.info(string.format("Fluid: Using Transposer UUID: %s", settings.transposer))
 
-    -- Use stored side if available
-    if settings.tankSide then
-        TANK_SIDE = settings.tankSide
-        Logger.info("Fluid: Using stored side: " .. TANK_SIDE)
+    local known = nil
+    for _, t in ipairs(State.tanks or {}) do
+        if t.uuid == settings.fluidTanks.main then
+            known = t.side
+            break
+        end
+    end
+
+    if known then
+        TANK_SIDE = known
+        Logger.info("Fluid: Using cached side: " .. TANK_SIDE)
     else
-        Logger.info("Fluid: No side in settings, scanning for valid tank...")
+        Logger.info("Fluid: Scanning for valid tank...")
         for side = 0, 5 do
             local count = transposer.getTankCount(side)
             if count and count > 0 then
                 local fluids = transposer.getFluidInTank(side)
                 if fluids and #fluids > 0 then
                     TANK_SIDE = side
-                    settings.tankSide = side
-                    Logger.info("Fluid: Found tank on side " .. side .. ". Saving to settings...")
-
-                    if not fs.exists("/home/src/config") then
-                        fs.makeDirectory("/home/src/config")
+                    table.insert(State.tanks, { uuid = settings.fluidTanks.main, side = side })
+                    local ok, err = StateHelper.save(State, STATE_PATH)
+                    if ok then
+                        Logger.info("Fluid: Detected side " .. side .. " saved to state.")
+                    else
+                        Logger.error("Fluid: Failed to save state: " .. tostring(err))
                     end
-
-                    local file, err = fs.open("/home/src/config/settings.lua", "w")
-                    if not file then
-                        Logger.error("Fluid: Failed to save settings! " .. tostring(err))
-                        break
-                    end
-
-                    file:write("local Settings = {}\n\n")
-                    file:write(string.format("Settings.transposer = \"%s\"\n", settings.transposer))
-                    file:write(string.format("Settings.tankSide = %d\n", side))
-                    file:write(string.format("Settings.updateInterval = %s\n", tostring(settings.updateInterval)))
-                    file:write(string.format("Settings.powerDevice = \"%s\"\n", settings.powerDevice))
-                    file:write(string.format("Settings.fluidTanks = { main = \"%s\" }\n", settings.fluidTanks.main))
-                    file:write(string.format("Settings.logFile = \"%s\"\n", settings.logFile))
-                    file:write("Settings.screenResolution = { width = 80, height = 25 }\n")
-                    file:write("Settings.hudEnabled = true\n")
-                    file:write("return Settings\n")
-                    file:close()
-
-                    Logger.info("Fluid: Settings saved to /home/src/config/settings.lua")
                     break
                 end
             end
