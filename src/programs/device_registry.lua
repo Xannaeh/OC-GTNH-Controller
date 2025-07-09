@@ -55,36 +55,14 @@ end
 
 function DeviceRegistry:pickAddress(deviceType)
     local ctype = deviceTypes[deviceType]
-    print("[DEBUG] Requested deviceType:", deviceType)
-    print("[DEBUG] Resolved ctype:", ctype)
-
-    print("[DEBUG] Full raw component.list():")
-    for addr, t in component.list() do
-        print(string.format("  %s  ->  %s", addr, t))
-    end
-
-    print("[DEBUG] Listing with filter component.list(ctype):")
-    for addr, t in component.list(ctype) do
-        print(string.format("  %s  ->  %s", addr, t))
-    end
-
-    -- Extra: confirm type() for each address in raw list
-    print("[DEBUG] Confirming component.type() for ALL:")
-    for addr, _ in component.list() do
-        print(string.format("  %s  => %s", addr, component.type(addr)))
-    end
 
     local addresses = {}
     local i = 1
-    for addr, t in component.list(ctype) do
-        print("[DEBUG] Checking filtered addr:", addr, "ctype:", t)
+    for addr, _ in component.list(ctype) do
         if not self:isAddressRegistered(addr) then
-            print("[DEBUG] Not registered:", addr)
             print(string.format("%d) %s", i, addr))
             addresses[i] = addr
             i = i + 1
-        else
-            print("[DEBUG] Already registered:", addr)
         end
     end
 
@@ -103,7 +81,6 @@ function DeviceRegistry:pickAddress(deviceType)
     end
 end
 
-
 function DeviceRegistry:isAddressRegistered(address)
     for _, device in pairs(self.devices) do
         if device.address == address then
@@ -120,19 +97,17 @@ function DeviceRegistry:registerDevice(deviceType, address, internalId)
         local UniversalTank = require("classes.universal_tank")
         local tempTank = UniversalTank:new(internalId, address)
         side = tempTank:autoDetectSide()
-        print("[DEBUG] Detected side for UniversalTank:", side)
     end
 
     table.insert(self.devices, {
         type = deviceType,
         address = address,
         internalId = internalId,
-        side = side  -- ✅ Save it!
+        side = side
     })
 
     self:save()
 end
-
 
 function DeviceRegistry:listDevices()
     print("Registered devices:")
