@@ -26,14 +26,19 @@ function DeviceRegistry:pickDeviceClass()
     local keys = {}
     local i = 1
     print("Available device classes:")
-    for k, v in pairs(deviceTypes) do
+    for k, _ in pairs(deviceTypes) do
         print(string.format("%d) %s", i, k))
         keys[i] = k
         i = i + 1
     end
     io.write("Pick class number: ")
     local choice = tonumber(io.read())
-    return keys[choice]
+    if choice and keys[choice] then
+        return keys[choice]
+    else
+        print("Invalid choice.")
+        return nil
+    end
 end
 
 function DeviceRegistry:pickAddress(deviceType)
@@ -54,7 +59,12 @@ function DeviceRegistry:pickAddress(deviceType)
     end
     io.write("Pick address number: ")
     local num = tonumber(io.read())
-    return addresses[num]
+    if num and addresses[num] then
+        return addresses[num]
+    else
+        print("Invalid choice.")
+        return nil
+    end
 end
 
 function DeviceRegistry:isAddressRegistered(address)
@@ -108,7 +118,7 @@ function DeviceRegistry:run()
         io.write("> ")
         local choice = io.read()
         if choice == "1" then
-            self:pickDeviceClass() -- just show list for now
+            self:pickDeviceClass() -- show numbered list
         elseif choice == "2" then
             local class = self:pickDeviceClass()
             if class then
@@ -118,11 +128,7 @@ function DeviceRegistry:run()
                     local id = io.read()
                     self:registerDevice(class, addr, id)
                     print("Device registered.")
-                else
-                    print("No address picked.")
                 end
-            else
-                print("Invalid class choice.")
             end
         elseif choice == "3" then
             self:listDevices()
