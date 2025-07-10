@@ -1,27 +1,50 @@
 -- src/programs/glasses_test.lua
 -- Simple HUD test: draws 2D quad and label to verify visibility
 
-local component = require("component")
+local serialization = require("serialization")
+local GlassesHUD = require("classes.glasses_hud")
 local os = require("os")
 
 local Program = {}
 
 function Program:run()
-    component.proxy(self.address)
-    local glasses = component.glasses  -- OpenGlasses component from the terminal
+    -- Load registered devices
+    local file = io.open("devices.dat", "r")
+    if not file then
+        print("No registered devices found.")
+        os.exit()
+    end
 
-    -- Create a text object on the HUD
-    local hudText = glasses.addText(5, 5, "Power: 45%")  -- (x=5, y=5) small offset from top-left
-    hudText.setScale(1)        -- 1x scale (default size)
-    hudText.setColor(0, 1, 0)  -- green text (r=0, g=1, b=0 in [0,1] normalized range)
+    local data = file:read("*a")
+    file:close()
+    local devices = serialization.unserialize(data) or {}
+
+    -- Find the first registered GlassesHud
+    local glassesDevice = nil
+    for _, device in ipairs(devices) do
+        if device.type == "GlassesHud" then
+            glassesDevice = device
+            break
+        end
+    end
+
+    if not glassesDevice then
+        print("No GlassesHud device registered.")
+        os.exit()
+    end
+
+    -- Create the HUD
+    local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address)
+
+    -- Add a test text label
+    hud:addTextLabel("testText", 5, 5, "Power: 45%", {0, 1, 0}, 0.02)
 
     print("HUD text added. It should now be visible in your AR glasses.")
 
-    -- Keep the program running so the text stays (OpenGlasses requires the program to persist to maintain the drawables)
+    -- Keep program alive to maintain HUD
     while true do
-        os.sleep(1)  -- idle loop
+        os.sleep(1)
     end
-
 end
 
 return Program
