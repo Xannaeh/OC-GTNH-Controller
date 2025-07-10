@@ -1,5 +1,5 @@
 -- src/programs/glasses_test.lua
--- Creates a checkerboard grid of black & white quads with coordinate labels
+-- Draws a checkerboard with safe yielding!
 
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
@@ -35,37 +35,42 @@ function Program:run()
     local screenW = hud.screenResolution[1]
     local screenH = hud.screenResolution[2]
 
-    -- === Grid config ===
-    local cellSize = 32   -- Adjustable: cell pixel size
-    local textScale = 0.5 -- Text label scale
+    local cellSize = 32   -- easily tweakable: 2, 4, 8, 16, 32, etc.
+    local textScale = 0.5
 
     local cols = math.floor(screenW / cellSize)
     local rows = math.floor(screenH / cellSize)
 
     print("Drawing checkerboard grid: " .. cols .. " x " .. rows .. " cells")
 
+    local batch = 0
+
     for y = 0, rows - 1 do
         for x = 0, cols - 1 do
             local px = x * cellSize
             local py = y * cellSize
 
-            -- Checkerboard pattern: black or white
-            local color = ((x + y) % 2 == 0) and 0x000000 or 0xFFFFFF
+            local isBlack = ((x + y) % 2 == 0)
+            local color = isBlack and 0x000000 or 0xFFFFFF
+            local labelColor = isBlack and 0xFFFFFF or 0x000000
 
-            -- Add quad
             local quadId = "cell_" .. x .. "_" .. y
             hud:addRectangle(quadId, px, py, cellSize, cellSize, color, 1.0)
 
-            -- Add label at cell center
             local labelId = "label_" .. x .. "_" .. y
-            local labelX = px + cellSize / 4
-            local labelY = py + cellSize / 4
-            local labelColor = (color == 0x000000) and 0xFFFFFF or 0x000000 -- invert text for contrast
-            hud:addText(labelId, "(" .. x .. "," .. y .. ")", labelX, labelY, labelColor, textScale, 1)
+            local labelX = px + 2
+            local labelY = py + 2
+            hud:addText(labelId, x .. "," .. y, labelX, labelY, labelColor, textScale, 1.0)
+
+            batch = batch + 1
+            if batch >= 100 then
+                os.sleep(1) -- yield every 100 cells
+                batch = 0
+            end
         end
     end
 
-    print("Checkerboard grid drawn! Cell size: " .. cellSize .. " px")
+    print("Done. Checkerboard drawn with yielding!")
 
     while true do os.sleep(1) end
 end
