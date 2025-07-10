@@ -1,10 +1,10 @@
--- device status
 local serialization = require("serialization")
 local component = require("component")
 local UniversalTank = require("classes.universal_tank")
 local FluidStorage = require("classes.fluid_storage")
 local PowerStorage = require("classes.power_storage")
 local BatteryBuffer = require("classes.battery_buffer")
+local GlassesHUD = require("classes.glasses_hud")
 
 local DeviceStatus = {}
 DeviceStatus.__index = DeviceStatus
@@ -39,6 +39,10 @@ function DeviceStatus:run()
             local battery = BatteryBuffer:new(device.internalId, device.address)
             battery:readPowerStatus()
             print(battery:toString())
+        elseif device.type == "GlassesHud" then
+            local proxy = component.proxy(device.address)
+            local hud = GlassesHUD:new(proxy)
+            print(string.format("GlassesHud[%s]: Ready. %d active widgets.", device.internalId, #hud.widgets))
         else
             print("Unknown device type: " .. tostring(device.type))
         end

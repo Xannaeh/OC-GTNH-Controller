@@ -1,14 +1,15 @@
--- src/classes/glasses_hud.lua
--- Manages active widget objects for glasses overlays
+local component = require("component")
 
 local GlassesHUD = {}
 GlassesHUD.__index = GlassesHUD
 
-function GlassesHUD:new(glassesProxy)
-    return setmetatable({
-        glasses = glassesProxy,
-        widgets = {}
-    }, self)
+function GlassesHUD:new(internalId, address)
+    local obj = setmetatable({}, self)
+    obj.internalId = internalId
+    obj.address = address
+    obj.glasses = component.proxy(address)
+    obj.widgets = {}
+    return obj
 end
 
 function GlassesHUD:clear()
@@ -49,7 +50,7 @@ function GlassesHUD:addTextLabel(id, x, y, text, color, scale)
 end
 
 function GlassesHUD:update()
-    -- placeholder for updates if needed later
+    -- placeholder for future dynamic updates if needed
 end
 
 return GlassesHUD

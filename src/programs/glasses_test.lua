@@ -7,6 +7,7 @@ local os = require("os")
 local Program = {}
 
 function Program:run()
+    component.proxy(self.address)
     local glasses = component.glasses  -- OpenGlasses component from the terminal
 
     -- Create a text object on the HUD
