@@ -32,15 +32,9 @@ end
 
 local function runGlassesTest()
 
-    for _, addr in ipairs(require("component").list("glasses")) do
-        local c = require("component").proxy(addr)
-        print("Methods for glasses:", addr)
-        for name, _ in pairs(c) do
-            print("  ", name)
-        end
-    end
-
-
+    for address, ctype in component.list() do print(address, ctype) end
+    for address in require("component").list("glasses") do for k,v in pairs(require("component").proxy(address)) do print(k) end end
+    for address in require("component").list("glasses") do for k,v in pairs(require("component").proxy(address)) do print(v) end end
 
     GlassesTest:run()
 end
