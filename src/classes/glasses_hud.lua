@@ -10,6 +10,9 @@ function GlassesHUD:new(internalId, address)
     obj.glasses = component.proxy(address)
     obj.widgets = {}
     obj.timers = {}
+
+    for k,v in pairs(require("component").proxy(address)) do print(k,v) end
+
     return obj
 end
 
