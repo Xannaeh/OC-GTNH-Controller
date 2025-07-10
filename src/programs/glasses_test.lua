@@ -8,21 +8,20 @@ local GlassesHUD = require("classes.glasses_hud")
 local Program = {}
 
 function Program:run()
-    if not component.isAvailable("glasses") then
-        print("Error: glasses component missing. Exiting.")
-        return
+    local glasses = component.glasses  -- OpenGlasses component from the terminal
+
+    -- Create a text object on the HUD
+    local hudText = glasses.addText(5, 5, "Power: 45%")  -- (x=5, y=5) small offset from top-left
+    hudText.setScale(1)        -- 1x scale (default size)
+    hudText.setColor(0, 1, 0)  -- green text (r=0, g=1, b=0 in [0,1] normalized range)
+
+    print("HUD text added. It should now be visible in your AR glasses.")
+
+    -- Keep the program running so the text stays (OpenGlasses requires the program to persist to maintain the drawables)
+    while true do
+        os.sleep(1)  -- idle loop
     end
 
-    local hud = GlassesHUD:new(component.glasses)
-    hud:clear()
-
-    hud:addQuad("hudQuad", 0.3, 0.85, 0.7, 0.92, {0, 0, 0, 0.6})
-    hud:addTextLabel("hudText", 0.5, 0.88, "HUD TEST", {1, 1, 1, 1}, 0.03)
-
-    hud:update()
-    print("HUD test active. Wear glasses to view it.")
-
-    while true do os.sleep(1) end
 end
 
 return Program
