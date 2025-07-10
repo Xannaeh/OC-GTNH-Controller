@@ -1,5 +1,5 @@
 -- src/programs/glasses_test.lua
--- Simple HUD test: draws a big red square in the middle using addRect
+-- Simple HUD test: draws a full-screen shiny red rectangle using addRectangle
 
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
@@ -8,6 +8,7 @@ local os = require("os")
 local Program = {}
 
 function Program:run()
+    -- Load registered devices
     local file = io.open("devices.dat", "r")
     if not file then
         print("No registered devices found.")
@@ -32,14 +33,13 @@ function Program:run()
 
     local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address)
 
-    local squareSize = 60
-    local screenW, screenH = 160, 90
-    local cx = (screenW - squareSize) / 2
-    local cy = (screenH - squareSize) / 2
+    -- Define full screen size (adjust if you use a different resolution)
+    local screenW, screenH = 160, 90  -- typical OpenGlasses virtual HUD grid
 
-    hud:addRect("centerSquare", cx, cy, squareSize, squareSize, 0xFF0000, 0.7)
+    -- Add full-screen shiny red rectangle with full opacity
+    hud:addRectangle("fullScreenRed", 0, 0, screenW, screenH, 0xFF0000, 1.0)
 
-    print("Red square drawn in the center of HUD.")
+    print("Full-screen shiny red square drawn on HUD.")
 
     while true do os.sleep(1) end
 end

@@ -4,6 +4,14 @@ local event = require("event")
 local GlassesHUD = {}
 GlassesHUD.__index = GlassesHUD
 
+-- Internal hex to normalized RGB
+local function RGB(hex)
+    local r = ((hex >> 16) & 0xFF) / 255.0
+    local g = ((hex >> 8) & 0xFF) / 255.0
+    local b = (hex & 0xFF) / 255.0
+    return r, g, b
+end
+
 function GlassesHUD:new(internalId, address)
     local obj = setmetatable({}, self)
     obj.internalId = internalId
@@ -11,66 +19,79 @@ function GlassesHUD:new(internalId, address)
     obj.glasses = component.proxy(address)
     obj.widgets = {}
     obj.timers = {}
+
     if not obj.glasses then
-        error("[GlassesHUD] Failed to proxy glasses component at address: " .. tostring(address))
+        error("[GlassesHUD] Could not proxy glasses component at: " .. tostring(address))
     end
+
     return obj
 end
 
 function GlassesHUD:clear()
-    for _, w in pairs(self.widgets) do
-        local ok, err = pcall(self.glasses.removeObject, self.glasses, w)
-        if not ok then
-            error("[GlassesHUD] Failed to remove widget: " .. tostring(err))
-        end
-    end
+    local ok = pcall(function() self.glasses.removeAll() end)
+    if not ok then error("[GlassesHUD] Failed to clear all widgets.") end
     self.widgets = {}
     for _, t in ipairs(self.timers) do event.cancel(t) end
     self.timers = {}
 end
 
-function GlassesHUD:addText(id, x, y, text, color, scale)
-    if not self.glasses.addTextLabel then error("[GlassesHUD] addTextLabel method not available") end
-    local ok, w = pcall(self.glasses.addTextLabel, x, y, text, color)
-    if not ok then error("[GlassesHUD] Failed to add text: " .. tostring(w)) end
-    if scale and w.setScale then w:setScale(scale) end
-    self.widgets[id] = w
-    return w
+function GlassesHUD:addText(id, text, x, y, color, scale, alpha)
+    local label = self.glasses.addTextLabel()
+    if not label then error("[GlassesHUD] addTextLabel failed.") end
+
+    label.setText(text)
+    label.setPosition(x, y)
+    label.setColor(RGB(color or 0xFFFFFF))
+    label.setScale(scale or 1)
+    if alpha then label.setAlpha(alpha) end
+
+    self.widgets[id] = label
+    return label
 end
 
-function GlassesHUD:addIcon(id, x, y, itemId, scale, alpha)
-    if not self.glasses.addItem then error("[GlassesHUD] addItem method not available") end
-    local ok, w = pcall(self.glasses.addItem, x, y, itemId)
-    if not ok then error("[GlassesHUD] Failed to add icon: " .. tostring(w)) end
-    if scale and w.setScale then w:setScale(scale) end
-    if alpha and w.setOpacity then w:setOpacity(alpha) end
-    self.widgets[id] = w
-    return w
+function GlassesHUD:addRectangle(id, x, y, width, height, color, alpha)
+    local quad = self.glasses.addQuad()
+    if not quad then error("[GlassesHUD] addQuad failed.") end
+
+    quad.setColor(RGB(color or 0xFFFFFF))
+    quad.setAlpha(alpha or 1.0)
+    quad.setVertex(1, x, y)
+    quad.setVertex(2, x, y + height)
+    quad.setVertex(3, x + width, y + height)
+    quad.setVertex(4, x + width, y)
+
+    self.widgets[id] = quad
+    return quad
 end
 
-function GlassesHUD:addRect(id, x, y, width, height, color, alpha)
-    if not self.glasses.addRect then error("[GlassesHUD] addRect method not available") end
-    local ok, w = pcall(self.glasses.addRect, x, y, width, height, color)
-    if not ok then error("[GlassesHUD] Failed to add rectangle: " .. tostring(w)) end
-    if alpha and w.setOpacity then w:setOpacity(alpha) end
-    self.widgets[id] = w
-    return w
+function GlassesHUD:addTriangle(id, v1, v2, v3, color, alpha)
+    local triangle = self.glasses.addTriangle()
+    if not triangle then error("[GlassesHUD] addTriangle failed.") end
+
+    triangle.setColor(RGB(color or 0xFFFFFF))
+    triangle.setAlpha(alpha or 1.0)
+    triangle.setVertex(1, v1[1], v1[2])
+    triangle.setVertex(2, v2[1], v2[2])
+    triangle.setVertex(3, v3[1], v3[2])
+
+    self.widgets[id] = triangle
+    return triangle
 end
 
 function GlassesHUD:addLine(id, x1, y1, x2, y2, color, alpha)
-    if not self.glasses.addLine2D then error("[GlassesHUD] addLine2D method not available") end
-    local ok, w = pcall(self.glasses.addLine2D, x1, y1, x2, y2, color)
-    if not ok then error("[GlassesHUD] Failed to add line: " .. tostring(w)) end
-    if alpha and w.setOpacity then w:setOpacity(alpha) end
-    self.widgets[id] = w
-    return w
+    local line = self.glasses.addLine2D(x1, y1, x2, y2, RGB(color or 0xFFFFFF))
+    if not line then error("[GlassesHUD] addLine2D failed.") end
+    if alpha then line.setAlpha(alpha) end
+
+    self.widgets[id] = line
+    return line
 end
 
 function GlassesHUD:remove(id)
     local w = self.widgets[id]
     if w then
-        local ok, err = pcall(self.glasses.removeObject, self.glasses, w)
-        if not ok then error("[GlassesHUD] Failed to remove widget: " .. tostring(err)) end
+        local ok = pcall(function() self.glasses.removeObject(w.getID()) end)
+        if not ok then error("[GlassesHUD] Failed to remove widget ID: " .. tostring(id)) end
         self.widgets[id] = nil
     else
         error("[GlassesHUD] Tried to remove non-existent widget ID: " .. tostring(id))
@@ -80,20 +101,20 @@ end
 function GlassesHUD:updateText(id, newText)
     local w = self.widgets[id]
     if w and w.setText then
-        local ok, err = pcall(w.setText, newText)
-        if not ok then error("[GlassesHUD] Failed to update text: " .. tostring(err)) end
+        local ok = pcall(function() w.setText(newText) end)
+        if not ok then error("[GlassesHUD] Failed to update text for ID: " .. tostring(id)) end
     else
-        error("[GlassesHUD] Cannot updateText, widget not found or invalid: " .. tostring(id))
+        error("[GlassesHUD] Cannot updateText, invalid widget ID: " .. tostring(id))
     end
 end
 
 function GlassesHUD:setOpacity(id, alpha)
     local w = self.widgets[id]
-    if w and w.setOpacity then
-        local ok, err = pcall(w.setOpacity, alpha)
-        if not ok then error("[GlassesHUD] Failed to set opacity: " .. tostring(err)) end
+    if w and w.setAlpha then
+        local ok = pcall(function() w.setAlpha(alpha) end)
+        if not ok then error("[GlassesHUD] Failed to set opacity for ID: " .. tostring(id)) end
     else
-        error("[GlassesHUD] Cannot setOpacity, widget not found or invalid: " .. tostring(id))
+        error("[GlassesHUD] Cannot setOpacity, invalid widget ID: " .. tostring(id))
     end
 end
 
@@ -101,11 +122,10 @@ function GlassesHUD:blink(id, interval)
     local state = true
     local timer = event.timer(interval, function()
         local w = self.widgets[id]
-        if w and w.setOpacity then
-            local ok = pcall(w.setOpacity, state and 1 or 0)
-            if not ok then error("[GlassesHUD] Blink failed for widget: " .. tostring(id)) end
+        if w and w.setAlpha then
+            w.setAlpha(state and 1 or 0)
+            state = not state
         end
-        state = not state
     end, math.huge)
     table.insert(self.timers, timer)
 end
@@ -118,10 +138,8 @@ function GlassesHUD:fadeOut(id, duration, steps)
     timer = event.timer(dt, function()
         count = count + 1
         local w = self.widgets[id]
-        if w and w.setOpacity then
-            local alpha = 1 - (count / steps)
-            local ok = pcall(w.setOpacity, alpha)
-            if not ok then error("[GlassesHUD] fadeOut failed for widget: " .. tostring(id)) end
+        if w and w.setAlpha then
+            w.setAlpha(1 - (count / steps))
         end
         if count >= steps then event.cancel(timer) end
     end, steps)
@@ -131,7 +149,7 @@ end
 function GlassesHUD:updateLoop(interval, func)
     local timer = event.timer(interval, function()
         local ok, err = pcall(func)
-        if not ok then error("[GlassesHUD] updateLoop function failed: " .. tostring(err)) end
+        if not ok then error("[GlassesHUD] updateLoop error: " .. tostring(err)) end
     end, math.huge)
     table.insert(self.timers, timer)
 end
