@@ -41,7 +41,7 @@ function Program:run()
     local cx = (screenW - squareSize) / 2
     local cy = (screenH - squareSize) / 2
 
-    hud:addRect("centerSquare", cx, cy, squareSize, squareSize, 0xFF0000, 0.7)
+    hud:Rect2D("centerSquare", cx, cy, squareSize, squareSize, 0xFF0000, 0.7)
     print("Red square drawn in the center of HUD.")
 
     print("Red square added at center of HUD.")

@@ -37,8 +37,8 @@ function GlassesHUD:addIcon(id, x, y, itemId, scale, alpha)
     return w
 end
 
-function GlassesHUD:addRect(id, x, y, width, height, color, alpha)
-    local w = self.glasses.addRect(x, y, width, height, color)
+function GlassesHUD:Rect2D(id, x, y, width, height, color, alpha)
+    local w = self.glasses.Rect2D(x, y, width, height, color)
     if alpha and w.setOpacity then w:setOpacity(alpha) end
     self.widgets[id] = w
     return w
