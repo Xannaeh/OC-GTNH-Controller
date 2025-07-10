@@ -1,5 +1,5 @@
 -- src/programs/glasses_test.lua
--- Draws a checkerboard with forced per-cell delay to never crash
+-- Draws a checkerboard with safe yielding: yields once per row
 
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
@@ -39,7 +39,7 @@ function Program:run()
     local screenH = hud.screenResolution[2]
 
     local cellSize = 32   -- Adjustable: 2, 4, 8, 16, 32...
-    local textScale = 0.5
+    local textScale = 1.5
 
     local cols = math.floor(screenW / cellSize)
     local rows = math.floor(screenH / cellSize)
@@ -63,11 +63,14 @@ function Program:run()
             local labelY = py + 2
             hud:addText(labelId, x .. "," .. y, labelX, labelY, labelColor, textScale, 1.0)
 
-            os.sleep(0.1) -- force yield for each cell
+            os.sleep(1) -- force yield for each cell
         end
+
+        -- Yield after each row to keep OC happy!
+        os.sleep(5)
     end
 
-    print("Done drawing checkerboard.")
+    print("Done drawing checkerboard. Everything is alive and safe!")
 
     while true do os.sleep(1) end
 end
