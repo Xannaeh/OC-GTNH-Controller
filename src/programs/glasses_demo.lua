@@ -2,8 +2,7 @@
 -- Demo: glasses dot follows nearest player using os_entdetector
 
 local component = require("component")
-local osEnt = require("component").os_entdetector
-local osTimer = require("event").timer
+local osEnt = component.os_entdetector
 local os = require("os")
 
 local glassesMod = require("modules.glasses")
@@ -25,7 +24,7 @@ function Program:run()
     g:clear()
 
     local dotId = "playerDot"
-    print("Glasses demo running. Scan for players near entity detector.")
+    print("Glasses demo running... scanning for players.")
 
     while true do
         local players = osEnt.scanPlayers(1)
