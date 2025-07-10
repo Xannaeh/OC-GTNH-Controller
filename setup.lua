@@ -47,6 +47,7 @@ local files = {
     { path = "/home/src/programs/device_registry.lua", url = github .. "/src/programs/device_registry.lua" },
     { path = "/home/src/programs/device_status.lua", url = github .. "/src/programs/device_status.lua" },
     { path = "/home/src/programs/glasses_demo.lua", url = github .. "/src/programs/glasses_demo.lua" },
+    { path = "/home/src/programs/glasses_test.lua", url = github .. "/src/programs/glasses_test.lua" },
     { path = "/home/src/ui/HudOverlay.lua", url = github .. "/src/ui/HudOverlay.lua" },
     { path = "/home/src/ui/ScreenUI.lua", url = github .. "/src/ui/ScreenUI.lua" },
     { path = "/home/src/utils/Logger.lua", url = github .. "/src/utils/Logger.lua" },
