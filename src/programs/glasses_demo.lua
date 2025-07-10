@@ -1,36 +1,23 @@
 -- src/programs/glasses_demo.lua
--- Demonstrates OC glasses: a 3D dot follows the player
+-- Demo: glasses dot follows nearest player using os_entdetector
 
 local component = require("component")
-local event = require("event")
+local osEnt = require("component").os_entdetector
+local osTimer = require("event").timer
 local os = require("os")
+
 local glassesMod = require("modules.glasses")
 local GlassesConstants = require("constants.glasses_constants")
-
-local hasPosition = component.isAvailable("position")
-local hasDetector = component.isAvailable("player_detector")
-
-local function getPlayerPosition()
-    if hasPosition then
-        return component.position.get()
-    elseif hasDetector then
-        local list = component.player_detector.getPlayers()
-        if #list >= 1 then
-            return component.player_detector.getPlayer(list[1])
-        end
-    end
-    return nil
-end
 
 local Program = {}
 
 function Program:run()
     if not component.isAvailable("glasses") then
-        print("Error: glasses component not installed. Exiting.")
+        print("Error: glasses component missing. Exiting.")
         return
     end
-    if not (hasPosition or hasDetector) then
-        print("Error: requires position or player_detector component. Exiting.")
+    if not component.isAvailable("os_entdetector") then
+        print("Error: os_entdetector upgrade not found. Exiting.")
         return
     end
 
@@ -38,13 +25,14 @@ function Program:run()
     g:clear()
 
     local dotId = "playerDot"
-    print("Glasses demo running. Wear glasses and look around.")
+    print("Glasses demo running. Scan for players near entity detector.")
 
     while true do
-        local pos = getPlayerPosition()
-        if pos then
+        local players = osEnt.scanPlayers(1)
+        if players and #players > 0 then
+            local p = players[1]
             g:remove(dotId)
-            g:addDot(dotId, pos.x, pos.y + 1.5, pos.z,
+            g:addDot(dotId, p.x, p.y + 1.5, p.z,
                     GlassesConstants.DEFAULT_COLOR,
                     GlassesConstants.DEFAULT_THROUGH)
             g:update()
