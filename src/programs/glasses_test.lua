@@ -1,5 +1,5 @@
 -- src/programs/glasses_test.lua
--- Now using real screen resolution with scaling handled inside HUD class
+-- Creates a grid of tiny quads and text to visualize HUD pixel coordinates
 
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
@@ -32,17 +32,36 @@ function Program:run()
 
     local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address, 2560, 1440, 3)
 
-    -- Use REAL resolution now!
     local screenW = hud.screenResolution[1]
     local screenH = hud.screenResolution[2]
 
-    hud:addRectangle("fullScreenRed", 0, 0, screenW, screenH, 0xFF0000, 1.0)
+    -- === Grid config ===
+    local cellSize = 32   -- << adjustable: each grid cell will be 32x32 screen pixels
+    local textScale = 0.5 -- << scale for text label, adjust for readability
 
-    print(
-            "Red rectangle covers real area: "
-                    .. screenW .. "x" .. screenH
-                    .. " with GUI scale 1/" .. hud.guiScale
-    )
+    local cols = math.floor(screenW / cellSize)
+    local rows = math.floor(screenH / cellSize)
+
+    print("Drawing grid: " .. cols .. " x " .. rows .. " cells")
+
+    for y = 0, rows - 1 do
+        for x = 0, cols - 1 do
+            local px = x * cellSize
+            local py = y * cellSize
+
+            -- Add quad for this cell
+            local quadId = "cell_" .. x .. "_" .. y
+            hud:addRectangle(quadId, px, py, cellSize, cellSize, 0x0000FF, 0.2) -- semi-transparent blue
+
+            -- Add text label at center of cell
+            local labelId = "label_" .. x .. "_" .. y
+            local labelX = px + cellSize / 4
+            local labelY = py + cellSize / 4
+            hud:addText(labelId, "(" .. x .. "," .. y .. ")", labelX, labelY, 0xFFFFFF, textScale, 1)
+        end
+    end
+
+    print("Grid drawn. Each cell is " .. cellSize .. "x" .. cellSize .. " pixels.")
 
     while true do os.sleep(1) end
 end
