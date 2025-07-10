@@ -1,5 +1,5 @@
 -- src/programs/glasses_test.lua
--- Simple HUD test: draws 2D quad and label to verify visibility
+-- Simple HUD test: draws a big red square in the middle of the HUD
 
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
@@ -36,12 +36,25 @@ function Program:run()
     -- Create the HUD
     local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address)
 
-    -- Add a test text label
-    hud:addTextLabel("testText", 5, 5, "Power: 45%", {0, 1, 0}, 0.02)
+    -- Dimensions for the red square
+    local squareSize = 60  -- in HUD "pixels"
+    -- Assuming a virtual screen size; adjust as your HUD uses
+    local screenW, screenH = 160, 90
+    local centerX = (screenW - squareSize) / 2
+    local centerY = (screenH - squareSize) / 2
 
-    print("HUD text added. It should now be visible in your AR glasses.")
+    -- Draw big red square in middle
+    hud:addBox(
+            "centerSquare",
+            centerX, centerY,
+            squareSize, squareSize,
+            0xFF0000,  -- HEX color for red
+            0.7        -- alpha/transparency 0-1
+    )
 
-    -- Keep program alive to maintain HUD
+    print("Red square added at center of HUD.")
+
+    -- Keep alive
     while true do
         os.sleep(1)
     end
