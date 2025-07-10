@@ -5,11 +5,10 @@ local GlassesHUD = {}
 GlassesHUD.__index = GlassesHUD
 
 function GlassesHUD:new(glassesProxy)
-    local obj = {
+    return setmetatable({
         glasses = glassesProxy,
-        widgets = {}, -- id → widget proxy
-    }
-    return setmetatable(obj, self)
+        widgets = {}
+    }, self)
 end
 
 function GlassesHUD:clear()
@@ -33,10 +32,24 @@ function GlassesHUD:remove(id)
     end
 end
 
--- Placeholder for addLine, addCube, addText, etc.
+function GlassesHUD:addQuad2D(id, x1, y1, x2, y2, color)
+    local w = self.glasses.addQuad2D()
+    w.setPosition(x1, y1, x2, y2)
+    w.setColor(color[1], color[2], color[3], color[4] or 1)
+    self.widgets[id] = w
+end
+
+function GlassesHUD:addTextLabel(id, x, y, text, color, scale)
+    local w = self.glasses.addTextLabel()
+    w.setPosition(x, y)
+    w.setText(text)
+    w.setColor(color[1], color[2], color[3], color[4] or 1)
+    w.setScale(scale or 0.02)
+    self.widgets[id] = w
+end
 
 function GlassesHUD:update()
-    -- To be implemented: update widget positions/state
+    -- Optional: update widget positions/state if needed later
 end
 
 return GlassesHUD

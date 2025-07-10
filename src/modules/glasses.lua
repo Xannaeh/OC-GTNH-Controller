@@ -9,9 +9,7 @@ Glasses.__index = Glasses
 
 function Glasses.init()
     assert(component.isAvailable("glasses"), "Glasses component required")
-    local proxy = component.glasses
-    local hud = GlassesHUD:new(proxy)
-    return setmetatable({ hud = hud }, Glasses)
+    return setmetatable({ hud = GlassesHUD:new(component.glasses) }, Glasses)
 end
 
 function Glasses:clear()
@@ -26,6 +24,12 @@ function Glasses:addDot(id, pos, color, through)
     self.hud:addDot(id, pos.x, pos.y, pos.z, color, through)
 end
 
--- More methods (addLine, addCube, etc.)...
+function Glasses:addQuad2D(id, x1, y1, x2, y2, color)
+    self.hud:addQuad2D(id, x1, y1, x2, y2, color)
+end
+
+function Glasses:addTextLabel(id, x, y, text, color, scale)
+    self.hud:addTextLabel(id, x, y, text, color, scale)
+end
 
 return Glasses

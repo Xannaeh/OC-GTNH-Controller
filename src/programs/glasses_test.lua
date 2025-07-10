@@ -17,21 +17,19 @@ function Program:run()
     local g = glassesMod.init()
     g:clear()
 
-    local quadId = "hudQuad"
-    local textId = "hudText"
-    local width, height = 0.4, 0.05   -- 40% screen width, 5% height
-    local x, y = 0.5, 0.9            -- centered near top
-
-    -- Draw semi-transparent dark panel
-    g.hud:addQuad2D(quadId,
-            x - width/2, y - height/2,
-            x + width/2, y + height/2,
+    -- Draw semi-transparent dark panel near top-center
+    g:addQuad2D("hudQuad",
+            0.3, 0.85,
+            0.7, 0.92,
             {0, 0, 0, 0.6}
     )
 
-    -- Draw white test label centered inside panel
-    g.hud:addTextLabel(textId,
-            x, y, "HUD TEST", {1, 1, 1}, 0.03
+    -- Draw white centered test label
+    g:addTextLabel("hudText",
+            0.5, 0.88,
+            "HUD TEST",
+            {1, 1, 1, 1},
+            0.03
     )
 
     g:update()
