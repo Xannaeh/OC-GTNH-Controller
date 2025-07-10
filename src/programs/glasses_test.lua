@@ -36,10 +36,14 @@ function Program:run()
     -- Draw full-screen shiny red overlay using scaled virtual width/height
     hud:addRectangle("fullScreenRed", 0, 0, hud.virtualWidth, hud.virtualHeight, 0xFF0000, 1.0)
 
-    print(string.format(
-            "Red rectangle covers virtual area: %dx%d (scale factor 1/%d)",
-            hud.virtualWidth, hud.virtualHeight, hud.guiScale
-    ))
+    print(
+            "Red rectangle covers virtual area: "
+                    .. math.floor(hud.virtualWidth)
+                    .. "x"
+                    .. math.floor(hud.virtualHeight)
+                    .. " (scale factor 1/" .. hud.guiScale .. ")"
+    )
+
 
     while true do os.sleep(1) end
 end

@@ -45,6 +45,10 @@ function GlassesHUD:setGuiScale(scale)
     self.virtualHeight = self.screenResolution[2] / self.guiScale
 end
 
+function GlassesHUD:applyScale(value)
+    return value / self.guiScale
+end
+
 function GlassesHUD:clear()
     local ok = pcall(function() self.glasses.removeAll() end)
     if not ok then error("[GlassesHUD] Failed to clear all widgets.") end
@@ -54,14 +58,13 @@ function GlassesHUD:clear()
 end
 
 function GlassesHUD:addText(id, text, x, y, color, scale, alpha)
-    local factor = 1 / self.guiScale
     local label = self.glasses.addTextLabel()
     if not label then error("[GlassesHUD] addTextLabel failed.") end
 
     label.setText(text)
-    label.setPosition(x * factor, y * factor)
+    label.setPosition(self:applyScale(x), self:applyScale(y))
     label.setColor(RGB(color or 0xFFFFFF))
-    label.setScale((scale or 1) * factor)
+    label.setScale((scale or 1) / self.guiScale)  -- text scales too
     if alpha then label.setAlpha(alpha) end
 
     self.widgets[id] = label
@@ -69,39 +72,49 @@ function GlassesHUD:addText(id, text, x, y, color, scale, alpha)
 end
 
 function GlassesHUD:addRectangle(id, x, y, width, height, color, alpha)
-    local factor = 1 / self.guiScale
     local quad = self.glasses.addQuad()
     if not quad then error("[GlassesHUD] addQuad failed.") end
 
     quad.setColor(RGB(color or 0xFFFFFF))
     quad.setAlpha(alpha or 1.0)
-    quad.setVertex(1, x * factor, y * factor)
-    quad.setVertex(2, x * factor, (y + height) * factor)
-    quad.setVertex(3, (x + width) * factor, (y + height) * factor)
-    quad.setVertex(4, (x + width) * factor, y * factor)
+
+    local x1 = self:applyScale(x)
+    local y1 = self:applyScale(y)
+    local x2 = self:applyScale(x + width)
+    local y2 = self:applyScale(y + height)
+
+    quad.setVertex(1, x1, y1)
+    quad.setVertex(2, x1, y2)
+    quad.setVertex(3, x2, y2)
+    quad.setVertex(4, x2, y1)
 
     self.widgets[id] = quad
     return quad
 end
 
 function GlassesHUD:addTriangle(id, v1, v2, v3, color, alpha)
-    local factor = 1 / self.guiScale
     local triangle = self.glasses.addTriangle()
     if not triangle then error("[GlassesHUD] addTriangle failed.") end
 
     triangle.setColor(RGB(color or 0xFFFFFF))
     triangle.setAlpha(alpha or 1.0)
-    triangle.setVertex(1, v1[1] * factor, v1[2] * factor)
-    triangle.setVertex(2, v2[1] * factor, v2[2] * factor)
-    triangle.setVertex(3, v3[1] * factor, v3[2] * factor)
+
+    triangle.setVertex(1, self:applyScale(v1[1]), self:applyScale(v1[2]))
+    triangle.setVertex(2, self:applyScale(v2[1]), self:applyScale(v2[2]))
+    triangle.setVertex(3, self:applyScale(v3[1]), self:applyScale(v3[2]))
 
     self.widgets[id] = triangle
     return triangle
 end
 
 function GlassesHUD:addLine(id, x1, y1, x2, y2, color, alpha)
-    local factor = 1 / self.guiScale
-    local line = self.glasses.addLine2D(x1 * factor, y1 * factor, x2 * factor, y2 * factor, RGB(color or 0xFFFFFF))
+    local line = self.glasses.addLine2D(
+            self:applyScale(x1),
+            self:applyScale(y1),
+            self:applyScale(x2),
+            self:applyScale(y2),
+            RGB(color or 0xFFFFFF)
+    )
     if not line then error("[GlassesHUD] addLine2D failed.") end
     if alpha then line.setAlpha(alpha) end
 
