@@ -34,10 +34,11 @@ end
 
 function GlassesHUD:addQuad(id, x1, y1, x2, y2, color)
     local w = self.glasses.addQuad()
-    w.set(x1, y1, x2, y2)
+    w.setPosition(x1, y1, x2, y2)   -- or w.set(...)
     w.setColor(color[1], color[2], color[3], color[4] or 1)
     self.widgets[id] = w
 end
+
 
 function GlassesHUD:addTextLabel(id, x, y, text, color, scale)
     local w = self.glasses.addTextLabel()
