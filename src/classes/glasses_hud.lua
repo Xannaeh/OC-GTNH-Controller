@@ -1,4 +1,3 @@
--- classes/glasses_hud.lua
 local component = require("component")
 local event = require("event")
 local GlassesHUD = {}
@@ -16,7 +15,7 @@ end
 
 function GlassesHUD:clear()
     for _, w in pairs(self.widgets) do
-        pcall(function() self.glasses.removeObject(w) end)
+        pcall(self.glasses.removeObject, self.glasses, w)
     end
     self.widgets = {}
     for _, t in ipairs(self.timers) do event.cancel(t) end
@@ -24,30 +23,30 @@ function GlassesHUD:clear()
 end
 
 function GlassesHUD:addText(id, x, y, text, color, scale)
-    local w = self.glasses.addText(x, y, text, color)
-    if scale then w:setScale(scale) end
+    local w = self.glasses.addTextLabel(x, y, text, color)
+    if scale and w.setScale then w:setScale(scale) end
     self.widgets[id] = w
     return w
 end
 
 function GlassesHUD:addIcon(id, x, y, itemId, scale, alpha)
-    local w = self.glasses.addIcon(x, y, itemId)
-    if scale then w:setScale(scale) end
-    if alpha then w:setOpacity(alpha) end
+    local w = self.glasses.addItem(x, y, itemId)
+    if scale and w.setScale then w:setScale(scale) end
+    if alpha and w.setOpacity then w:setOpacity(alpha) end
     self.widgets[id] = w
     return w
 end
 
-function GlassesHUD:addBox(id, x, y, wdt, hgt, color, alpha)
-    local w = self.glasses.addBox(x, y, wdt, hgt, color)
-    if alpha then w:setOpacity(alpha) end
+function GlassesHUD:addRect(id, x, y, width, height, color, alpha)
+    local w = self.glasses.addRect(x, y, width, height, color)
+    if alpha and w.setOpacity then w:setOpacity(alpha) end
     self.widgets[id] = w
     return w
 end
 
 function GlassesHUD:addLine(id, x1, y1, x2, y2, color, alpha)
-    local w = self.glasses.addLine(x1, y1, x2, y2, color)
-    if alpha then w:setOpacity(alpha) end
+    local w = self.glasses.addLine2D(x1, y1, x2, y2, color)
+    if alpha and w.setOpacity then w:setOpacity(alpha) end
     self.widgets[id] = w
     return w
 end
@@ -55,19 +54,19 @@ end
 function GlassesHUD:remove(id)
     local w = self.widgets[id]
     if w then
-        pcall(function() self.glasses.removeObject(w) end)
+        pcall(self.glasses.removeObject, self.glasses, w)
         self.widgets[id] = nil
     end
 end
 
 function GlassesHUD:updateText(id, newText)
     local w = self.widgets[id]
-    if w then w:setText(newText) end
+    if w and w.setText then w:setText(newText) end
 end
 
 function GlassesHUD:setOpacity(id, alpha)
     local w = self.widgets[id]
-    if w then w:setOpacity(alpha) end
+    if w and w.setOpacity then w:setOpacity(alpha) end
 end
 
 -- Timer-based animation utilities:
@@ -76,7 +75,9 @@ function GlassesHUD:blink(id, interval)
     local state = true
     local timer = event.timer(interval, function()
         local w = self.widgets[id]
-        if w then w:setOpacity(state and 1 or 0) end
+        if w and w.setOpacity then
+            w:setOpacity(state and 1 or 0)
+        end
         state = not state
     end, math.huge)
     table.insert(self.timers, timer)
@@ -90,9 +91,8 @@ function GlassesHUD:fadeOut(id, duration, steps)
     timer = event.timer(dt, function()
         count = count + 1
         local w = self.widgets[id]
-        if w then
-            local a = 1 - (count / steps)
-            w:setOpacity(a)
+        if w and w.setOpacity then
+            w:setOpacity(1 - (count / steps))
         end
         if count >= steps then event.cancel(timer) end
     end, steps)

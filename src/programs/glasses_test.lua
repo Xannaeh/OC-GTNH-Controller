@@ -36,21 +36,13 @@ function Program:run()
     -- Create the HUD
     local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address)
 
-    -- Dimensions for the red square
-    local squareSize = 60  -- in HUD "pixels"
-    -- Assuming a virtual screen size; adjust as your HUD uses
-    local screenW, screenH = 160, 90
-    local centerX = (screenW - squareSize) / 2
-    local centerY = (screenH - squareSize) / 2
+    local squareSize = 60
+    local screenW, screenH = 160, 90  -- adjust if different
+    local cx = (screenW - squareSize) / 2
+    local cy = (screenH - squareSize) / 2
 
-    -- Draw big red square in middle
-    hud:addBox(
-            "centerSquare",
-            centerX, centerY,
-            squareSize, squareSize,
-            0xFF0000,  -- HEX color for red
-            0.7        -- alpha/transparency 0-1
-    )
+    hud:addRect("centerSquare", cx, cy, squareSize, squareSize, 0xFF0000, 0.7)
+    print("Red square drawn in the center of HUD.")
 
     print("Red square added at center of HUD.")
 
