@@ -31,11 +31,7 @@ local function runGlassesDemo()
 end
 
 local function runGlassesTest()
-
-    for address, ctype in component.list() do print(address, ctype) end
-    for address in require("component").list("glasses") do for k,v in pairs(require("component").proxy(address)) do print(k) end end
-    for address in require("component").list("glasses") do for k,v in pairs(require("component").proxy(address)) do print(v) end end
-
+    for address in require("component").list("glasses") do for k,v in pairs(require("component").proxy(address)) do print(k,v) end end
     GlassesTest:run()
 end
 
