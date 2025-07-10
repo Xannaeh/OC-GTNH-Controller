@@ -7,18 +7,13 @@ local os = require("os")
 local glassesMod = require("modules.glasses")
 local GlassesConstants = require("constants.glasses_constants")
 
-assert(component.isAvailable("glasses"), "Requires glasses upgrade")
-assert(component.isAvailable("player_detector") or component.isAvailable("position"), "Requires position component")
-
-local g = glassesMod.init()
-g:clear()
-
-local dotId = "playerDot"
+local hasPosition = component.isAvailable("position")
+local hasDetector = component.isAvailable("player_detector")
 
 local function getPlayerPosition()
-    if component.isAvailable("position") then
+    if hasPosition then
         return component.position.get()
-    elseif component.isAvailable("player_detector") then
+    elseif hasDetector then
         local list = component.player_detector.getPlayers()
         if #list >= 1 then
             return component.player_detector.getPlayer(list[1])
@@ -27,16 +22,35 @@ local function getPlayerPosition()
     return nil
 end
 
-print("Glasses demo running. Wear glasses and look at your character.")
+local Program = {}
 
-while true do
-    local pos = getPlayerPosition()
-    if pos then
-        g:remove(dotId)
-        g:addDot(dotId, pos.x, pos.y + 1.5, pos.z,
-                GlassesConstants.DEFAULT_COLOR,
-                GlassesConstants.DEFAULT_THROUGH)
-        g:update()
+function Program:run()
+    if not component.isAvailable("glasses") then
+        print("Error: glasses component not installed. Exiting.")
+        return
     end
-    os.sleep(GlassesConstants.TICK_RATE)
+    if not (hasPosition or hasDetector) then
+        print("Error: requires position or player_detector component. Exiting.")
+        return
+    end
+
+    local g = glassesMod.init()
+    g:clear()
+
+    local dotId = "playerDot"
+    print("Glasses demo running. Wear glasses and look around.")
+
+    while true do
+        local pos = getPlayerPosition()
+        if pos then
+            g:remove(dotId)
+            g:addDot(dotId, pos.x, pos.y + 1.5, pos.z,
+                    GlassesConstants.DEFAULT_COLOR,
+                    GlassesConstants.DEFAULT_THROUGH)
+            g:update()
+        end
+        os.sleep(GlassesConstants.TICK_RATE)
+    end
 end
+
+return Program
