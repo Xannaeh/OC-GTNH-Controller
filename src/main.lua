@@ -9,7 +9,7 @@ local io = require("io")
 
 local DeviceRegistry = require("programs/device_registry")
 local DeviceStatus = require("programs/device_status")
-local GlassesDemo = require("programs/glasses_demo")
+--local GlassesDemo = require("programs/glasses_demo")
 local GlassesTest = require("programs/glasses_test")
 
 -- === Main loop ===
@@ -26,12 +26,11 @@ local function runDeviceStatus()
     DeviceStatus:run()
 end
 
-local function runGlassesDemo()
-    GlassesDemo:run()
-end
+--local function runGlassesDemo()
+--    GlassesDemo:run()
+--end
 
 local function runGlassesTest()
-    for address in require("component").list("glasses") do for k,v in pairs(require("component").proxy(address)) do print(k,v) end end
     GlassesTest:run()
 end
 
@@ -50,8 +49,8 @@ elseif choice == "2" then
     runDeviceRegistry()
 elseif choice == "3" then
     runDeviceStatus()
-elseif choice == "4" then
-    runGlassesDemo()
+--elseif choice == "4" then
+--    runGlassesDemo()
 elseif choice == "5" then
     runGlassesTest()
 else

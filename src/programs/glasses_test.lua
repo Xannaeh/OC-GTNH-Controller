@@ -3,7 +3,6 @@
 
 local component = require("component")
 local os = require("os")
-local GlassesHUD = require("classes.glasses_hud")
 
 local Program = {}
 
