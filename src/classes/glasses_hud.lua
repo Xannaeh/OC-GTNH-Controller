@@ -20,11 +20,8 @@ function GlassesHUD:new(internalId, address, screenWidth, screenHeight, guiScale
     obj.widgets = {}
     obj.timers = {}
 
-    -- Resolution and scale config
     obj.screenResolution = {screenWidth or 2560, screenHeight or 1440}
     obj.guiScale = guiScale or 3
-    obj.virtualWidth = obj.screenResolution[1] / obj.guiScale
-    obj.virtualHeight = obj.screenResolution[2] / obj.guiScale
 
     if not obj.glasses then
         error("[GlassesHUD] Could not proxy glasses component at: " .. tostring(address))
@@ -35,14 +32,10 @@ end
 
 function GlassesHUD:setResolution(width, height)
     self.screenResolution = {width, height}
-    self.virtualWidth = width / self.guiScale
-    self.virtualHeight = height / self.guiScale
 end
 
 function GlassesHUD:setGuiScale(scale)
     self.guiScale = scale
-    self.virtualWidth = self.screenResolution[1] / self.guiScale
-    self.virtualHeight = self.screenResolution[2] / self.guiScale
 end
 
 function GlassesHUD:applyScale(value)
@@ -64,7 +57,7 @@ function GlassesHUD:addText(id, text, x, y, color, scale, alpha)
     label.setText(text)
     label.setPosition(self:applyScale(x), self:applyScale(y))
     label.setColor(RGB(color or 0xFFFFFF))
-    label.setScale((scale or 1) / self.guiScale)  -- text scales too
+    label.setScale((scale or 1) / self.guiScale)
     if alpha then label.setAlpha(alpha) end
 
     self.widgets[id] = label
