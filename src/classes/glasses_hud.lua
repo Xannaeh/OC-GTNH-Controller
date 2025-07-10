@@ -12,7 +12,7 @@ local function RGB(hex)
     return r, g, b
 end
 
-function GlassesHUD:new(internalId, address)
+function GlassesHUD:new(internalId, address, screenWidth, screenHeight, guiScale)
     local obj = setmetatable({}, self)
     obj.internalId = internalId
     obj.address = address
@@ -20,11 +20,29 @@ function GlassesHUD:new(internalId, address)
     obj.widgets = {}
     obj.timers = {}
 
+    -- Resolution and scale config
+    obj.screenResolution = {screenWidth or 2560, screenHeight or 1440}
+    obj.guiScale = guiScale or 3
+    obj.virtualWidth = obj.screenResolution[1] / obj.guiScale
+    obj.virtualHeight = obj.screenResolution[2] / obj.guiScale
+
     if not obj.glasses then
         error("[GlassesHUD] Could not proxy glasses component at: " .. tostring(address))
     end
 
     return obj
+end
+
+function GlassesHUD:setResolution(width, height)
+    self.screenResolution = {width, height}
+    self.virtualWidth = width / self.guiScale
+    self.virtualHeight = height / self.guiScale
+end
+
+function GlassesHUD:setGuiScale(scale)
+    self.guiScale = scale
+    self.virtualWidth = self.screenResolution[1] / self.guiScale
+    self.virtualHeight = self.screenResolution[2] / self.guiScale
 end
 
 function GlassesHUD:clear()
@@ -36,13 +54,14 @@ function GlassesHUD:clear()
 end
 
 function GlassesHUD:addText(id, text, x, y, color, scale, alpha)
+    local factor = 1 / self.guiScale
     local label = self.glasses.addTextLabel()
     if not label then error("[GlassesHUD] addTextLabel failed.") end
 
     label.setText(text)
-    label.setPosition(x, y)
+    label.setPosition(x * factor, y * factor)
     label.setColor(RGB(color or 0xFFFFFF))
-    label.setScale(scale or 1)
+    label.setScale((scale or 1) * factor)
     if alpha then label.setAlpha(alpha) end
 
     self.widgets[id] = label
@@ -50,36 +69,39 @@ function GlassesHUD:addText(id, text, x, y, color, scale, alpha)
 end
 
 function GlassesHUD:addRectangle(id, x, y, width, height, color, alpha)
+    local factor = 1 / self.guiScale
     local quad = self.glasses.addQuad()
     if not quad then error("[GlassesHUD] addQuad failed.") end
 
     quad.setColor(RGB(color or 0xFFFFFF))
     quad.setAlpha(alpha or 1.0)
-    quad.setVertex(1, x, y)
-    quad.setVertex(2, x, y + height)
-    quad.setVertex(3, x + width, y + height)
-    quad.setVertex(4, x + width, y)
+    quad.setVertex(1, x * factor, y * factor)
+    quad.setVertex(2, x * factor, (y + height) * factor)
+    quad.setVertex(3, (x + width) * factor, (y + height) * factor)
+    quad.setVertex(4, (x + width) * factor, y * factor)
 
     self.widgets[id] = quad
     return quad
 end
 
 function GlassesHUD:addTriangle(id, v1, v2, v3, color, alpha)
+    local factor = 1 / self.guiScale
     local triangle = self.glasses.addTriangle()
     if not triangle then error("[GlassesHUD] addTriangle failed.") end
 
     triangle.setColor(RGB(color or 0xFFFFFF))
     triangle.setAlpha(alpha or 1.0)
-    triangle.setVertex(1, v1[1], v1[2])
-    triangle.setVertex(2, v2[1], v2[2])
-    triangle.setVertex(3, v3[1], v3[2])
+    triangle.setVertex(1, v1[1] * factor, v1[2] * factor)
+    triangle.setVertex(2, v2[1] * factor, v2[2] * factor)
+    triangle.setVertex(3, v3[1] * factor, v3[2] * factor)
 
     self.widgets[id] = triangle
     return triangle
 end
 
 function GlassesHUD:addLine(id, x1, y1, x2, y2, color, alpha)
-    local line = self.glasses.addLine2D(x1, y1, x2, y2, RGB(color or 0xFFFFFF))
+    local factor = 1 / self.guiScale
+    local line = self.glasses.addLine2D(x1 * factor, y1 * factor, x2 * factor, y2 * factor, RGB(color or 0xFFFFFF))
     if not line then error("[GlassesHUD] addLine2D failed.") end
     if alpha then line.setAlpha(alpha) end
 
