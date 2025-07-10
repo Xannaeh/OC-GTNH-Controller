@@ -48,9 +48,8 @@ function GlassesHUD:addTextLabel(id, x, y, text, color, scale)
     self.widgets[id] = w
 end
 
-
 function GlassesHUD:update()
-    -- Optional: update widget positions/state if needed later
+    -- placeholder for updates if needed later
 end
 
 return GlassesHUD
