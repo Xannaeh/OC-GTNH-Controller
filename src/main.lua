@@ -21,6 +21,7 @@ local ScreenUI = require("ui/ScreenUI")
 local HudOverlay = require("ui/HudOverlay")
 local DeviceRegistry = require("programs/device_registry")
 local DeviceStatus = require("programs/device_status")
+local GlassesDemo = require("programs/glasses_demo")
 
 -- === Ensure /home/logs exists ===
 if not fs.exists("/home/logs") then
@@ -84,10 +85,15 @@ local function runDeviceStatus()
     DeviceStatus:run()
 end
 
+local function runGlassesDemo()
+    GlassesDemo:run()
+end
+
 print("Select program to run:")
 print("1) Main Automation Loop")
 print("2) Device Registry CLI")
 print("3) Show Device Status")
+print("4) Glasses Demo")
 io.write("> ")
 local choice = io.read()
 
@@ -97,6 +103,8 @@ elseif choice == "2" then
     runDeviceRegistry()
 elseif choice == "3" then
     runDeviceStatus()
+elseif choice == "4" then
+    runGlassesDemo()
 else
     print("Invalid choice. Exiting.")
 end
