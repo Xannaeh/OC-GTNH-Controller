@@ -8,7 +8,7 @@ local Colors = require("constants.colors")
 local BarWidget = {}
 BarWidget.__index = BarWidget
 
-function BarWidget:new(id, glasses, hud, x, y, width, height, colorFill, colorBorder, liquidName)
+function BarWidget:new(id, glasses, hud, x, y, width, height, colorFill, colorBorder, liquidName, colorText)
     local obj = setmetatable({}, self)
     obj.base = GlassesWidget:new(id, glasses)
     obj.hud = hud
@@ -39,7 +39,7 @@ function BarWidget:new(id, glasses, hud, x, y, width, height, colorFill, colorBo
     obj.percentText = Text2D:new(
             id .. "_percent", glasses, hud,
             obj.percent .. "%", x + 4, y + height - 25,
-            Colors.WHITE, 1.2, 1.0
+            colorText, 1.2, 1.0
     )
     obj.base:addElement(obj.percentText)
 
@@ -47,7 +47,7 @@ function BarWidget:new(id, glasses, hud, x, y, width, height, colorFill, colorBo
     obj.nameText = Text2D:new(
             id .. "_name", glasses, hud,
             liquidName, x + 4, y + height - 12,
-            Colors.WHITE, 1.2, 1.0
+            colorText, 1.2, 1.0
     )
     obj.base:addElement(obj.nameText)
 

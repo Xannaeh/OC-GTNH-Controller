@@ -9,7 +9,7 @@ local Colors = require("constants.colors")
 local PowerWaveWidget = {}
 PowerWaveWidget.__index = PowerWaveWidget
 
-function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
+function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY,colorText)
     local obj = setmetatable({}, self)
     obj.base = GlassesWidget:new(id, glasses)
     obj.hud = hud
@@ -46,14 +46,14 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
     obj.percentText = Text2D:new(
             id .. "_percent", glasses, hud,
             "80%", obj.baseX + width - 80, obj.baseY + 5,
-            Colors.PURPLE_DARK, 1.5, 1.0
+            colorText, 1.5, 1.0
     )
     obj.base:addElement(obj.percentText)
 
     obj.euText = Text2D:new(
             id .. "_eu", glasses, hud,
             "+1200 EU/t", obj.baseX + width - 120, obj.baseY + height - 20,
-            Colors.PURPLE_DARK, 1.5, 1.0
+            colorText, 1.5, 1.0
     )
     obj.base:addElement(obj.euText)
 

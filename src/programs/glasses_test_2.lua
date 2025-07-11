@@ -31,7 +31,7 @@ local function createPowerWave(hud)
     local wavePoints = {
         {0, 40}, {200, 30}, {400, 50}, {600, 35}, {800, 45}, {1000, 40}
     }
-    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, 20, 1300)
+    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, 20, 1300,Colors.PURPLE_VERY_DARK)
     hud:addWidget(powerWave)
 end
 
@@ -65,7 +65,8 @@ local function createBarWidgets(hud)
         local bar = BarWidget:new(
                 "bar_" .. i, hud.glasses, hud,
                 barX, y, barWidth, h,
-                colors[i], Colors.PURPLE_DARK, "Water"
+                colors[i], Colors.PURPLE_DARK, "Water",
+                Colors.PASTEL_PINK1
         )
         hud:addWidget(bar)
         barX = barX + barWidth + spacing
@@ -78,7 +79,7 @@ end
 local function createCat(hud)
     local catX = 1255
     local catY = 1260
-    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "=^.^=", catX, catY)
+    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "=^.^=", catX, catY,Colors.PASTEL_PINK1)
     hud:addWidget(cat)
 end
 
