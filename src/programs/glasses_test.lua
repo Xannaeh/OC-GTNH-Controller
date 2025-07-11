@@ -144,6 +144,64 @@ local function createBottomPanelWidget(hud)
 end
 
 ----------------------------------------------------
+-- ✅ Create corner marker widgets (big squares)
+----------------------------------------------------
+local function createCornerMarkers(hud)
+    local markers = {}
+
+    local screenW, screenH = hud.screenResolution[1], hud.screenResolution[2]
+    local markerSize = 150  -- make them big & obvious
+
+    local corners = {
+        {
+            name = "top_left",
+            x = 0,
+            y = 0,
+            color = 0xFF0000  -- red
+        },
+        {
+            name = "top_right",
+            x = screenW - markerSize,
+            y = 0,
+            color = 0x00FF00  -- green
+        },
+        {
+            name = "bottom_left",
+            x = 0,
+            y = screenH - markerSize,
+            color = 0x0000FF  -- blue
+        },
+        {
+            name = "bottom_right",
+            x = screenW - markerSize,
+            y = screenH - markerSize,
+            color = 0xFFFF00  -- yellow
+        }
+    }
+
+    for _, corner in ipairs(corners) do
+        print("🧩 Marker: " .. corner.name)
+        print("  Top-left: (" .. corner.x .. ", " .. corner.y .. ")")
+        print("  Bottom-right: (" .. (corner.x + markerSize) .. ", " .. (corner.y + markerSize) .. ")")
+
+        local widget = GlassesWidget:new("marker_" .. corner.name, hud.glasses)
+
+        widget:addElement(Element.Rectangle2D:new(
+                "rect_" .. corner.name,
+                hud.glasses, hud,
+                corner.x, corner.y,
+                markerSize, markerSize,
+                corner.color,
+                1.0
+        ))
+
+        table.insert(markers, widget)
+    end
+
+    return markers
+end
+
+----------------------------------------------------
 -- ✅ Program main run
 ----------------------------------------------------
 function Program:run()
@@ -159,6 +217,11 @@ function Program:run()
 
     hud:addWidget(centerWidget)
     hud:addWidget(panelWidget)
+
+    local markerWidgets = createCornerMarkers(hud)
+    for _, w in ipairs(markerWidgets) do
+        hud:addWidget(w)
+    end
 
     -- Render all
     hud:render()
