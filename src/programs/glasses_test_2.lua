@@ -1,8 +1,8 @@
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
 local BarWidget = require("classes.widgets.bar_widget")
-local EmojiWidget = require("classes.widgets.emoji_widget")
 local PowerWaveWidget = require("classes.widgets.power_wave_widget")
+local EmojiWidget = require("classes.widgets.emoji_widget")
 local Colors = require("constants.colors")
 local os = require("os")
 
@@ -19,56 +19,66 @@ function Program:run()
     local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address, 2560, 1370, 3)
     hud:clear()
 
-    ---------------------------------------
-    -- ✅ Power Wave Widget
-    ---------------------------------------
+    -------------------------
+    -- ✅ 1) Power Wave
+    -------------------------
+    local waveBaseX = 20
+    local waveBaseY = 1300
+    local waveLength = 600
+
     local wavePoints = {
-        {0, 30}, {100, 10}, {200, 35}, {300, 5}, {400, 30}, {500, 15}, {600, 40}, {700, 20}, {800, 30}
+        {0, 40}, {100, 20}, {200, 60}, {300, 20}, {400, 50}, {500, 25}, {600, 40}
     }
-    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, 20, 1240)
+
+    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, waveBaseX, waveBaseY)
     hud:addWidget(powerWave)
 
-    ---------------------------------------
-    -- ✅ Bars stacked above wave
-    ---------------------------------------
-    local barX = 20
-    local barY = 1100  -- start above wave
-    local barWidth = 30
-    local baseHeight = 200
+    -------------------------
+    -- ✅ 2) Bar Widgets
+    -------------------------
+    local barX = waveBaseX
+    local barBaseY = waveBaseY - 10  -- start just above wave
+    local barWidth = 40
+    local barHeight = 200
 
-    local barColors = {
-        Colors.ACCENT1, Colors.ACCENT2, Colors.ACCENT3, Colors.ACCENT4, Colors.ACCENT5
+    local barPairs = {
+        {Colors.ACCENT1, Colors.ACCENT1},
+        {Colors.ACCENT2, Colors.ACCENT2},
+        {Colors.ACCENT3, Colors.ACCENT3},
+        {Colors.ACCENT4, Colors.ACCENT4},
+        {Colors.ACCENT5, Colors.ACCENT5}
     }
 
-    local pairHeight = baseHeight
-
-    for i = 1, 10 do
-        local colorIdx = math.floor((i - 1) / 2) + 1
-        local color = barColors[colorIdx]
-        local bar = BarWidget:new(
-                "bar_" .. i, hud.glasses, hud,
-                barX, barY,
-                barWidth, pairHeight,
-                color, Colors.PURPLE_DARK, "Water"
-        )
-        hud:addWidget(bar)
-        barX = barX + barWidth + 8
-        if i % 2 == 0 then pairHeight = pairHeight * 0.75 end
+    local n = 1
+    local barSpacing = 10
+    for _, pair in ipairs(barPairs) do
+        for j = 1, 2 do
+            local h = barHeight * (0.8 ^ (n - 1))
+            local barY = barBaseY - h  -- align bottom
+            local bar = BarWidget:new(
+                    "bar_" .. n, hud.glasses, hud,
+                    barX, barY, barWidth, h,
+                    pair[j], Colors.PURPLE_DARK, "Water"
+            )
+            hud:addWidget(bar)
+            barX = barX + barWidth + barSpacing
+            n = n + 1
+        end
     end
 
-    ---------------------------------------
-    -- ✅ Cat Emoji widget
-    ---------------------------------------
-    local catX = 1280  -- adjust to your screen center
-    local catY = 1320  -- just above hotbar
-    local cat = EmojiWidget:new("cat_face", hud.glasses, hud, "=^.^=", catX, catY)
+    -------------------------
+    -- ✅ 3) Cat Emoji
+    -------------------------
+    local catX = 1220  -- adjust horizontally (centered above hotbar)
+    local catY = 1520  -- adjust vertically above vanilla hearts
+    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "ฅ^•ﻌ•^ฅ", catX, catY)
     hud:addWidget(cat)
 
     ---------------------------------------
     -- ✅ Render all
     ---------------------------------------
     hud:render()
-    print("✅ Wave, bars, and cat rendered.")
+    print("✅ HUD done: wave, bars, cat")
     while true do os.sleep(1) end
 end
 
