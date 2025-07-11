@@ -1,12 +1,10 @@
--- src/programs/glasses_test_2.lua
-
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
 local BarWidget = require("classes.widgets.bar_widget")
-local PowerWaveWidget = require("classes.widgets.power_wave_widget")
 local EmojiWidget = require("classes.widgets.emoji_widget")
-local os = require("os")
+local PowerWaveWidget = require("classes.widgets.power_wave_widget")
 local Colors = require("constants.colors")
+local os = require("os")
 
 local Program = {}
 
@@ -21,58 +19,56 @@ function Program:run()
     local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address, 2560, 1370, 3)
     hud:clear()
 
-    -- Bars bottom left
-    local screenH = hud.screenResolution[2]
-    local barX = 20
-    local barY = screenH - 200 - 20  -- bottom margin
+    ---------------------------------------
+    -- ✅ Power Wave Widget
+    ---------------------------------------
+    local wavePoints = {
+        {0, 30}, {100, 10}, {200, 35}, {300, 5}, {400, 30}, {500, 15}, {600, 40}, {700, 20}, {800, 30}
+    }
+    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, 20, 1240)
+    hud:addWidget(powerWave)
 
-    local barWidth = 40
-    local barHeight = 200
+    ---------------------------------------
+    -- ✅ Bars stacked above wave
+    ---------------------------------------
+    local barX = 20
+    local barY = 1100  -- start above wave
+    local barWidth = 30
+    local baseHeight = 200
 
     local barColors = {
-        {Colors.ACCENT1, Colors.ACCENT2},
-        {Colors.ACCENT3, Colors.ACCENT4},
-        {Colors.ACCENT5, Colors.ACCENT6}
+        Colors.ACCENT1, Colors.ACCENT2, Colors.ACCENT3, Colors.ACCENT4, Colors.ACCENT5
     }
 
-    local n = 1
-    for i, pair in ipairs(barColors) do
-        for j = 1, 2 do
-            local bar = BarWidget:new(
-                    "bar_" .. n, hud.glasses, hud,
-                    barX, barY, barWidth, barHeight,
-                    pair[j % 2 + 1], Colors.PURPLE_DARK, "Water"
-            )
-            hud:addWidget(bar)
-            barX = barX + barWidth + 10
-            n = n + 1
-        end
+    local pairHeight = baseHeight
+
+    for i = 1, 10 do
+        local colorIdx = math.floor((i - 1) / 2) + 1
+        local color = barColors[colorIdx]
+        local bar = BarWidget:new(
+                "bar_" .. i, hud.glasses, hud,
+                barX, barY,
+                barWidth, pairHeight,
+                color, Colors.PURPLE_DARK, "Water"
+        )
+        hud:addWidget(bar)
+        barX = barX + barWidth + 8
+        if i % 2 == 0 then pairHeight = pairHeight * 0.75 end
     end
-    print("✅ Bars at X/Y: " .. barX .. "," .. barY)
 
-    -- Power wave
-    local wavePoints = {
-        {0, 0}, {20, -20}, {40, 10}, {60, -15}, {80, 0}
-    }
-    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, 600, screenH - 250)
-    hud:addWidget(powerWave)
-    print("🌊 Wave graph at X/Y: " .. 600 .. "," .. (screenH - 250))
-
-    -- Cat emoji
-    local cat = EmojiWidget:new("emoji_cat", hud.glasses, hud, "=^.^=", 1200, screenH - 100)
+    ---------------------------------------
+    -- ✅ Cat Emoji widget
+    ---------------------------------------
+    local catX = 1280  -- adjust to your screen center
+    local catY = 1320  -- just above hotbar
+    local cat = EmojiWidget:new("cat_face", hud.glasses, hud, "=^.^=", catX, catY)
     hud:addWidget(cat)
 
-    -- Moon emoji
-    local moon = EmojiWidget:new("emoji_moon", hud.glasses, hud, "( )", 1250, screenH - 100)
-    hud:addWidget(moon)
-
-    -- Hearts emoji
-    local hearts = EmojiWidget:new("emoji_hearts", hud.glasses, hud, "♥♥♥", 1300, screenH - 100)
-    hud:addWidget(hearts)
-
+    ---------------------------------------
+    -- ✅ Render all
+    ---------------------------------------
     hud:render()
-    print("✅ Full multi-widget HUD rendered!")
-
+    print("✅ Wave, bars, and cat rendered.")
     while true do os.sleep(1) end
 end
 

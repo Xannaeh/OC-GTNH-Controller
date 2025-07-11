@@ -17,18 +17,17 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
     obj.baseX = baseX or 200
     obj.baseY = baseY or 1300
 
-    local width = 200
+    local width = 800
     local height = 50
 
     -- Background panel
     obj.base:addElement(Rectangle2D:new(
             id .. "_bg", glasses, hud,
-            obj.baseX, obj.baseY,
-            width, height,
+            obj.baseX, obj.baseY, width, height,
             Colors.PURPLE_LIGHT, 0.5
     ))
 
-    -- Wave lines (thicker)
+    -- Wave segments: use Line2D!
     for i = 1, #points - 1 do
         local x1 = obj.baseX + points[i][1]
         local y1 = obj.baseY + points[i][2]
@@ -38,7 +37,7 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
         obj.base:addElement(Line2D:new(
                 id .. "_seg_" .. i, glasses, hud,
                 x1, y1, x2, y2,
-                Colors.ACCENT1, 1.0,3
+                Colors.ACCENT1, 1.0, 4  -- thickness = 4px
         ))
     end
 
@@ -46,7 +45,7 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
     obj.statusText = Text2D:new(
             id .. "_text", glasses, hud,
             "80% | +1200 EU/t",
-            obj.baseX + 10, obj.baseY - 10,
+            obj.baseX + 10, obj.baseY - 15,
             Colors.PURPLE_DARK, 1.5, 1.0
     )
     obj.base:addElement(obj.statusText)
