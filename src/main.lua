@@ -59,7 +59,7 @@ elseif choice == "3" then
 --    runGlassesDemo()
 elseif choice == "5" then
     runGlassesTest()
-elseif choice == "5" then
+elseif choice == "6" then
     runGlassesTest2()
 else
     print("Invalid choice. Exiting.")

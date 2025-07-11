@@ -2,6 +2,7 @@
 
 local GlassesWidget = require("classes.glasses_widget")
 local Line2D = require("classes.elements.line2d")
+local Rectangle2D = require("classes.elements.rectangle2d")
 local Text2D = require("classes.elements.text2d")
 local Colors = require("constants.colors")
 
@@ -16,7 +17,18 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
     obj.baseX = baseX or 200
     obj.baseY = baseY or 1300
 
-    -- Generate segments
+    local width = 200
+    local height = 50
+
+    -- Background panel
+    obj.base:addElement(Rectangle2D:new(
+            id .. "_bg", glasses, hud,
+            obj.baseX, obj.baseY,
+            width, height,
+            Colors.PURPLE_LIGHT, 0.5
+    ))
+
+    -- Wave lines (thicker)
     for i = 1, #points - 1 do
         local x1 = obj.baseX + points[i][1]
         local y1 = obj.baseY + points[i][2]
@@ -30,10 +42,11 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
         ))
     end
 
+    -- Status text
     obj.statusText = Text2D:new(
             id .. "_text", glasses, hud,
             "80% | +1200 EU/t",
-            obj.baseX + 200, obj.baseY - 20,
+            obj.baseX + 10, obj.baseY - 10,
             Colors.PURPLE_DARK, 1.5, 1.0
     )
     obj.base:addElement(obj.statusText)

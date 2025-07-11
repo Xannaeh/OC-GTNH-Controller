@@ -37,6 +37,7 @@ local files = {
     { path = "/home/src/classes/elements/triangle2d.lua", url = github .. "/src/classes/elements/triangle2d.lua" },
     { path = "/home/src/classes/utils/color.lua", url = github .. "/src/classes/utils/color.lua" },
     { path = "/home/src/classes/widgets/bar_widget.lua", url = github .. "/src/classes/widgets/bar_widget.lua" },
+    { path = "/home/src/classes/widgets/emoji_widget.lua", url = github .. "/src/classes/widgets/emoji_widget.lua" },
     { path = "/home/src/classes/widgets/power_wave_widget.lua", url = github .. "/src/classes/widgets/power_wave_widget.lua" },
     { path = "/home/src/classes/battery_buffer.lua", url = github .. "/src/classes/battery_buffer.lua" },
     { path = "/home/src/classes/fluid_storage.lua", url = github .. "/src/classes/fluid_storage.lua" },
