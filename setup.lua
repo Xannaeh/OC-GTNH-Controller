@@ -18,7 +18,8 @@ end
 local dirs = {
     "/home/src",
     "/home/src/classes",
-    "/home/src/config",
+    "/home/src/classes/elements",
+    "/home/src/classes/utils",
     "/home/src/constants",
     "/home/src/programs",
 }
@@ -56,7 +57,6 @@ end
 
 -- Persistent files
 local persistent = {
-    {},
 }
 
 if replace == "Y" then
