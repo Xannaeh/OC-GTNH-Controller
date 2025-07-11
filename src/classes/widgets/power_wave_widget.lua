@@ -14,20 +14,21 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
     obj.base = GlassesWidget:new(id, glasses)
     obj.hud = hud
     obj.points = points or {}
-    obj.baseX = baseX or 200
+    obj.baseX = baseX or 20
     obj.baseY = baseY or 1300
 
-    local width = 800
+    local width = 1000 -- Wider to reach the hotbar
     local height = 50
 
-    -- Background panel
+    -- ✅ Background panel
     obj.base:addElement(Rectangle2D:new(
             id .. "_bg", glasses, hud,
-            obj.baseX, obj.baseY, width, height,
+            obj.baseX, obj.baseY,
+            width, height,
             Colors.PURPLE_LIGHT, 0.5
     ))
 
-    -- Wave segments: use Line2D!
+    -- ✅ Thicker wave lines using Line2D -> quad
     for i = 1, #points - 1 do
         local x1 = obj.baseX + points[i][1]
         local y1 = obj.baseY + points[i][2]
@@ -41,14 +42,20 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
         ))
     end
 
-    -- Status text
-    obj.statusText = Text2D:new(
-            id .. "_text", glasses, hud,
-            "80% | +1200 EU/t",
-            obj.baseX + 10, obj.baseY - 15,
+    -- ✅ Status text on right side, inside panel: top = %, bottom = EU/t
+    obj.percentText = Text2D:new(
+            id .. "_percent", glasses, hud,
+            "80%", obj.baseX + width - 80, obj.baseY + 5,
             Colors.PURPLE_DARK, 1.5, 1.0
     )
-    obj.base:addElement(obj.statusText)
+    obj.base:addElement(obj.percentText)
+
+    obj.euText = Text2D:new(
+            id .. "_eu", glasses, hud,
+            "+1200 EU/t", obj.baseX + width - 120, obj.baseY + height - 20,
+            Colors.PURPLE_DARK, 1.5, 1.0
+    )
+    obj.base:addElement(obj.euText)
 
     return obj
 end

@@ -9,88 +9,89 @@ local os = require("os")
 
 local Program = {}
 
-function Program:run()
+-----------------------------------------------------
+-- ✅ Load HUD
+-----------------------------------------------------
+local function loadHUD()
     local file = io.open("devices.dat", "r")
     if not file then print("No devices."); os.exit() end
     local devices = serialization.unserialize(file:read("*a")) or {}; file:close()
     local glassesDevice = nil
     for _, d in ipairs(devices) do if d.type == "GlassesHud" then glassesDevice = d break end end
     if not glassesDevice then print("No HUD found."); os.exit() end
-
     local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address, 2560, 1370, 3)
     hud:clear()
+    return hud
+end
 
-    -------------------------
-    -- ✅ 1) Power Wave
-    -------------------------
-    local waveBaseX = 20
-    local waveBaseY = 1300
-    local waveLength = 600
-
+-----------------------------------------------------
+-- ✅ Power Wave
+-----------------------------------------------------
+local function createPowerWave(hud)
     local wavePoints = {
-        {0, 40}, {100, 20}, {200, 60}, {300, 20}, {400, 50}, {500, 25}, {600, 40}
+        {0, 40}, {200, 30}, {400, 50}, {600, 35}, {800, 45}, {1000, 40}
     }
-
-    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, waveBaseX, waveBaseY)
+    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, 20, 1300)
     hud:addWidget(powerWave)
+end
 
-    -------------------------
-    -- ✅ 2) Bar Widgets
-    -------------------------
-    local barX = waveBaseX
-    local barBaseY = waveBaseY - 10  -- same base line
+-----------------------------------------------------
+-- ✅ Bar Widgets
+-----------------------------------------------------
+local function createBarWidgets(hud)
+    local barX = 20
+    local barBaseY = 1290
     local barWidth = 40
     local barHeight = 200
-    local barSpacing = 10
+    local spacing = 10
 
-    local pairHeights = {
-        barHeight,                -- AB
-        barHeight * 0.75,         -- CD
-        barHeight * 0.75 * 0.75,  -- EH
-        barHeight * 0.75 * 0.75 * 0.75, -- IJ
-        barHeight * 0.75 * 0.75 * 0.75 * 0.75  -- extra pair if needed
+    local heights = {
+        barHeight, barHeight,                   -- AB
+        barHeight * 0.75, barHeight * 0.75,     -- CD
+        barHeight * 0.75 * 0.75, barHeight * 0.75 * 0.75, -- EH
+        barHeight * 0.75 * 0.75 * 0.75, barHeight * 0.75 * 0.75 * 0.75 -- IJ
     }
 
-
-    local barPairs = {
-        Colors.ACCENT1,
-        Colors.ACCENT2,
-        Colors.ACCENT3,
-        Colors.ACCENT4,
-        Colors.ACCENT5
+    local colors = {
+        Colors.ACCENT1, Colors.ACCENT1,
+        Colors.ACCENT2, Colors.ACCENT2,
+        Colors.ACCENT3, Colors.ACCENT3,
+        Colors.ACCENT4, Colors.ACCENT4
     }
 
-    local n = 1
-    for i, baseColor in ipairs(barPairs) do
-        local h = pairHeights[i]
-        if not h then error("Missing pairHeights for pair " .. tostring(i)) end
-        for j = 1, 2 do
-            local barY = barBaseY - h
-            local bar = BarWidget:new(
-                    "bar_" .. n, hud.glasses, hud,
-                    barX, barY, barWidth, h,
-                    baseColor, Colors.PURPLE_DARK, "Water"
-            )
-            hud:addWidget(bar)
-            barX = barX + barWidth + barSpacing
-            n = n + 1
-        end
+    for i = 1, #heights do
+        local h = heights[i]
+        local y = barBaseY - h
+        local bar = BarWidget:new(
+                "bar_" .. i, hud.glasses, hud,
+                barX, y, barWidth, h,
+                colors[i], Colors.PURPLE_DARK, "Water"
+        )
+        hud:addWidget(bar)
+        barX = barX + barWidth + spacing
     end
+end
 
-
-    -------------------------
-    -- ✅ 3) Cat Emoji
-    -------------------------
-    local catX = 1255  -- adjust horizontally (centered above hotbar)
-    local catY = 1260  -- adjust vertically above vanilla hearts
-    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "=^.^=", catX, catY, Colors.PASTEL_PINK1)
+-----------------------------------------------------
+-- ✅ Cat Emoji
+-----------------------------------------------------
+local function createCat(hud)
+    local catX = 1255
+    local catY = 1260
+    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "=^.^=", catX, catY)
     hud:addWidget(cat)
+end
 
-    ---------------------------------------
-    -- ✅ Render all
-    ---------------------------------------
+-----------------------------------------------------
+-- ✅ Run all
+-----------------------------------------------------
+function Program:run()
+    local hud = loadHUD()
+    createPowerWave(hud)
+    createBarWidgets(hud)
+    createCat(hud)
     hud:render()
-    print("✅ HUD done: wave, bars, cat")
+    print("✅ HUD rendered: wave, bars, cat.")
     while true do os.sleep(1) end
 end
 
