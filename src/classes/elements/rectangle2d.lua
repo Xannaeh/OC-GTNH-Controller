@@ -21,15 +21,10 @@ function Rectangle2D:draw()
     quad.setColor(Color.RGB(self.color))
     quad.setAlpha(self.alpha)
 
-    --local x1 = self.hud:applyScale(self.x)
-    --local y1 = self.hud:applyScale(self.y)
-    --local x2 = self.hud:applyScale(self.x + self.width)
-    --local y2 = self.hud:applyScale(self.y + self.height)
     local x1 = self.hud:applyScale(self.x)
     local y1 = self.hud:applyScale(self.y)
-    local x2 = x1 + self.width  -- no scale
-    local y2 = y1 + self.height
-
+    local x2 = self.hud:applyScale(self.x + self.width)
+    local y2 = self.hud:applyScale(self.y + self.height)
 
     quad.setVertex(1, x1, y1)
     quad.setVertex(2, x1, y2)

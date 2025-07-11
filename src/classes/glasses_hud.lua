@@ -31,8 +31,7 @@ function GlassesHUD:setGuiScale(scale)
 end
 
 function GlassesHUD:applyScale(value)
-    --return value / self.guiScale
-    return value  -- For now: treat all input as real pixels
+    return value / self.guiScale
 end
 
 function GlassesHUD:addWidget(widget)
