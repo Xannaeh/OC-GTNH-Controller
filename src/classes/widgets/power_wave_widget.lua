@@ -9,16 +9,16 @@ local Colors = require("constants.colors")
 local PowerWaveWidget = {}
 PowerWaveWidget.__index = PowerWaveWidget
 
-function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY,colorText)
+function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY, colorText)
     local obj = setmetatable({}, self)
     obj.base = GlassesWidget:new(id, glasses)
     obj.hud = hud
     obj.points = points or {}
     obj.baseX = baseX or 20
-    obj.baseY = baseY or 1300
+    obj.baseY = baseY or 1280
 
-    local width = 1000 -- Wider to reach the hotbar
-    local height = 50
+    local width = 920   -- shorter to NOT touch vanilla hotbar
+    local height = 90   -- taller for bottom line to reach screen edge
 
     -- ✅ Background panel
     obj.base:addElement(Rectangle2D:new(
@@ -28,7 +28,7 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY,colorText)
             Colors.PURPLE_LIGHT, 0.5
     ))
 
-    -- ✅ Thicker wave lines using Line2D -> quad
+    -- ✅ Thicker wave lines using Line2D (thick quad lines)
     for i = 1, #points - 1 do
         local x1 = obj.baseX + points[i][1]
         local y1 = obj.baseY + points[i][2]
@@ -38,11 +38,11 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY,colorText)
         obj.base:addElement(Line2D:new(
                 id .. "_seg_" .. i, glasses, hud,
                 x1, y1, x2, y2,
-                Colors.ACCENT1, 1.0, 4  -- thickness = 4px
+                Colors.ACCENT1, 1.0, 4
         ))
     end
 
-    -- ✅ Status text on right side, inside panel: top = %, bottom = EU/t
+    -- ✅ Status text on right side, inside: % on top, EU/t on bottom
     obj.percentText = Text2D:new(
             id .. "_percent", glasses, hud,
             "80%", obj.baseX + width - 80, obj.baseY + 5,
@@ -52,7 +52,7 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY,colorText)
 
     obj.euText = Text2D:new(
             id .. "_eu", glasses, hud,
-            "+1200 EU/t", obj.baseX + width - 120, obj.baseY + height - 20,
+            "+1200 EU/t", obj.baseX + width - 120, obj.baseY + height - 25,
             colorText, 1.5, 1.0
     )
     obj.base:addElement(obj.euText)

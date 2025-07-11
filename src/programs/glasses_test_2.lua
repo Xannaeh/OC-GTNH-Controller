@@ -29,9 +29,13 @@ end
 -----------------------------------------------------
 local function createPowerWave(hud)
     local wavePoints = {
-        {0, 40}, {200, 30}, {400, 50}, {600, 35}, {800, 45}, {1000, 40}
+        {0, 70}, {200, 40}, {400, 60}, {600, 50}, {800, 65}, {900, 60}
     }
-    local powerWave = PowerWaveWidget:new("power_wave", hud.glasses, hud, wavePoints, 20, 1300,Colors.PURPLE_VERY_DARK)
+    local powerWave = PowerWaveWidget:new(
+            "power_wave",
+            hud.glasses, hud,
+            wavePoints, 20, 1280, Colors.PURPLE_VERY_DARK
+    )
     hud:addWidget(powerWave)
 end
 
@@ -40,23 +44,25 @@ end
 -----------------------------------------------------
 local function createBarWidgets(hud)
     local barX = 20
-    local barBaseY = 1290
+    local barBaseY = 1275
     local barWidth = 40
     local barHeight = 200
     local spacing = 10
 
     local heights = {
-        barHeight, barHeight,                   -- AB
-        barHeight * 0.75, barHeight * 0.75,     -- CD
-        barHeight * 0.75 * 0.75, barHeight * 0.75 * 0.75, -- EH
-        barHeight * 0.75 * 0.75 * 0.75, barHeight * 0.75 * 0.75 * 0.75 -- IJ
+        barHeight, barHeight,
+        barHeight * 0.75, barHeight * 0.75,
+        barHeight * 0.75 * 0.75, barHeight * 0.75 * 0.75,
+        barHeight * 0.75 * 0.75 * 0.75, barHeight * 0.75 * 0.75 * 0.75,
+        barHeight * 0.75 * 0.75 * 0.75 * 0.75, barHeight * 0.75 * 0.75 * 0.75 * 0.75
     }
 
     local colors = {
         Colors.ACCENT1, Colors.ACCENT1,
         Colors.ACCENT2, Colors.ACCENT2,
         Colors.ACCENT3, Colors.ACCENT3,
-        Colors.ACCENT4, Colors.ACCENT4
+        Colors.ACCENT4, Colors.ACCENT4,
+        Colors.ACCENT5, Colors.ACCENT5
     }
 
     for i = 1, #heights do
@@ -79,7 +85,7 @@ end
 local function createCat(hud)
     local catX = 1255
     local catY = 1260
-    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "=^.^=", catX, catY,Colors.PASTEL_PINK1)
+    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "=^.^=", catX, catY, Colors.PASTEL_PINK1)
     hud:addWidget(cat)
 end
 
@@ -92,7 +98,7 @@ function Program:run()
     createBarWidgets(hud)
     createCat(hud)
     hud:render()
-    print("✅ HUD rendered: wave, bars, cat.")
+    print("✅ HUD done: wave, bars, cat.")
     while true do os.sleep(1) end
 end
 
