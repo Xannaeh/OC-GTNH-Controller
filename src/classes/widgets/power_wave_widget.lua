@@ -38,7 +38,7 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
         obj.base:addElement(Line2D:new(
                 id .. "_seg_" .. i, glasses, hud,
                 x1, y1, x2, y2,
-                Colors.ACCENT1, 1.0
+                Colors.ACCENT1, 1.0,3
         ))
     end
 

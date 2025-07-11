@@ -5,7 +5,7 @@ local Color = require("classes.utils.color")
 local Line2D = setmetatable({}, Base)
 Line2D.__index = Line2D
 
-function Line2D:new(id, glasses, hud, x1, y1, x2, y2, color, alpha)
+function Line2D:new(id, glasses, hud, x1, y1, x2, y2, color, alpha, thickness)
     local obj = Base.new(self, id, glasses, hud)
     obj.x1 = x1
     obj.y1 = y1
@@ -13,19 +13,30 @@ function Line2D:new(id, glasses, hud, x1, y1, x2, y2, color, alpha)
     obj.y2 = y2
     obj.color = color or 0xFFFFFF
     obj.alpha = alpha or 1
+    obj.thickness = thickness or 2  -- default thickness in pixels
     return obj
 end
 
 function Line2D:draw()
-    local line = self.glasses.addLine2D(
-            self.hud:applyScale(self.x1),
-            self.hud:applyScale(self.y1),
-            self.hud:applyScale(self.x2),
-            self.hud:applyScale(self.y2),
-            Color.RGB(self.color)
-    )
-    if self.alpha then line.setAlpha(self.alpha) end
-    self.drawable = line
+    local quad = self.glasses.addQuad()
+    quad.setColor(Color.RGB(self.color))
+    quad.setAlpha(self.alpha)
+
+    local dx = self.x2 - self.x1
+    local dy = self.y2 - self.y1
+    local len = math.sqrt(dx*dx + dy*dy)
+
+    -- Normalize perpendicular vector for thickness offset
+    local nx = -dy / len * self.thickness / 2
+    local ny = dx / len * self.thickness / 2
+
+    -- 4 vertices for the thick line
+    quad.setVertex(1, self.hud:applyScale(self.x1 + nx), self.hud:applyScale(self.y1 + ny))
+    quad.setVertex(2, self.hud:applyScale(self.x1 - nx), self.hud:applyScale(self.y1 - ny))
+    quad.setVertex(3, self.hud:applyScale(self.x2 - nx), self.hud:applyScale(self.y2 - ny))
+    quad.setVertex(4, self.hud:applyScale(self.x2 + nx), self.hud:applyScale(self.y2 + ny))
+
+    self.drawable = quad
 end
 
 return Line2D
