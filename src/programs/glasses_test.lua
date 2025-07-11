@@ -38,7 +38,7 @@ local function loadGlassesDevice()
 end
 
 ----------------------------------------------------
--- ✅ Create centered square widget
+-- ✅ Create centered square widget (with debug)
 ----------------------------------------------------
 local function createCenteredSquareWidget(hud)
     local screenW, screenH = hud.screenResolution[1], hud.screenResolution[2]
@@ -46,6 +46,13 @@ local function createCenteredSquareWidget(hud)
 
     local px = (screenW - squareSize) / 2
     local py = (screenH - squareSize) / 2
+
+    -- Print debug info
+    print("➡️ Screen resolution: " .. screenW .. "x" .. screenH)
+    print("🟥 Centered square:")
+    print("  Top-left corner: (" .. px .. ", " .. py .. ")")
+    print("  Bottom-right corner: (" .. (px + squareSize) .. ", " .. (py + squareSize) .. ")")
+    print("  Center point: (" .. (px + squareSize / 2) .. ", " .. (py + squareSize / 2) .. ")")
 
     local widget = GlassesWidget:new("centered_square", hud.glasses)
 
