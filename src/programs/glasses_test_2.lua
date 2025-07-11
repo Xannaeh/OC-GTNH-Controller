@@ -1,3 +1,4 @@
+-- src/programs/glasses_test_2.lua
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
 local BarWidget = require("classes.widgets.bar_widget")
@@ -80,8 +81,8 @@ function Program:run()
     -------------------------
     -- ✅ 3) Cat Emoji
     -------------------------
-    local catX = 1220  -- adjust horizontally (centered above hotbar)
-    local catY = 1320  -- adjust vertically above vanilla hearts
+    local catX = 1255  -- adjust horizontally (centered above hotbar)
+    local catY = 1260  -- adjust vertically above vanilla hearts
     local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "=^.^=", catX, catY, Colors.PASTEL_PINK1)
     hud:addWidget(cat)
 
