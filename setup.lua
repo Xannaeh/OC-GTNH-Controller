@@ -29,9 +29,16 @@ end
 
 -- Files (non-persistent)
 local files = {
+    { path = "/home/src/classes/elements/line2d.lua", url = github .. "/src/classes/elements/line2d.lua" },
+    { path = "/home/src/classes/elements/rectangle2d.lua", url = github .. "/src/classes/elements/rectangle2d.lua" },
+    { path = "/home/src/classes/elements/text2d.lua", url = github .. "/src/classes/elements/text2d.lua" },
+    { path = "/home/src/classes/elements/triangle2d.lua", url = github .. "/src/classes/elements/triangle2d.lua" },
+    { path = "/home/src/classes/utils/color.lua", url = github .. "/src/classes/utils/color.lua" },
     { path = "/home/src/classes/battery_buffer.lua", url = github .. "/src/classes/battery_buffer.lua" },
     { path = "/home/src/classes/fluid_storage.lua", url = github .. "/src/classes/fluid_storage.lua" },
+    { path = "/home/src/classes/glasses_element.lua", url = github .. "/src/classes/glasses_element.lua" },
     { path = "/home/src/classes/glasses_hud.lua", url = github .. "/src/classes/glasses_hud.lua" },
+    { path = "/home/src/classes/glasses_widget.lua", url = github .. "/src/classes/glasses_widget.lua" },
     { path = "/home/src/classes/power_storage.lua", url = github .. "/src/classes/power_storage.lua" },
     { path = "/home/src/classes/universal_tank.lua", url = github .. "/src/classes/universal_tank.lua" },
     { path = "/home/src/constants/device_types.lua", url = github .. "/src/constants/device_types.lua" },
@@ -49,7 +56,7 @@ end
 
 -- Persistent files
 local persistent = {
-    { path = "/home/src/config/glasses_config.lua", url = github .. "/src/config/glasses_config.lua" },
+    {},
 }
 
 if replace == "Y" then

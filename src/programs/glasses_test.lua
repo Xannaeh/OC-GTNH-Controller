@@ -1,3 +1,6 @@
+-- src/programs/glasses_test.lua
+-- Draws a checkerboard with safe yielding: yields once per row
+
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
 local GlassesWidget = require("classes.glasses_widget")
