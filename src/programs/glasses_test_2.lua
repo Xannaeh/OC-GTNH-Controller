@@ -37,28 +37,35 @@ function Program:run()
     -- ✅ 2) Bar Widgets
     -------------------------
     local barX = waveBaseX
-    local barBaseY = waveBaseY - 10  -- start just above wave
+    local barBaseY = waveBaseY - 10  -- same base line
     local barWidth = 40
     local barHeight = 200
+    local barSpacing = 10
+
+    local pairHeights = {
+        barHeight,                           -- AB
+        barHeight * 0.75,                    -- CD
+        barHeight * 0.75 * 0.75,             -- EH
+        barHeight * 0.75 * 0.75 * 0.75       -- IJ
+    }
 
     local barPairs = {
-        {Colors.ACCENT1, Colors.ACCENT1},
-        {Colors.ACCENT2, Colors.ACCENT2},
-        {Colors.ACCENT3, Colors.ACCENT3},
-        {Colors.ACCENT4, Colors.ACCENT4},
-        {Colors.ACCENT5, Colors.ACCENT5}
+        Colors.ACCENT1,
+        Colors.ACCENT2,
+        Colors.ACCENT3,
+        Colors.ACCENT4,
+        Colors.ACCENT5
     }
 
     local n = 1
-    local barSpacing = 10
-    for _, pair in ipairs(barPairs) do
+    for i, baseColor in ipairs(barPairs) do
+        local h = pairHeights[i]
         for j = 1, 2 do
-            local h = barHeight * (0.8 ^ (n - 1))
-            local barY = barBaseY - h  -- align bottom
+            local barY = barBaseY - h  -- bottom aligned
             local bar = BarWidget:new(
                     "bar_" .. n, hud.glasses, hud,
                     barX, barY, barWidth, h,
-                    pair[j], Colors.PURPLE_DARK, "Water"
+                    baseColor, Colors.PURPLE_DARK, "Water"
             )
             hud:addWidget(bar)
             barX = barX + barWidth + barSpacing
@@ -71,7 +78,7 @@ function Program:run()
     -------------------------
     local catX = 1220  -- adjust horizontally (centered above hotbar)
     local catY = 1320  -- adjust vertically above vanilla hearts
-    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "ฅ^•ﻌ•^ฅ", catX, catY,Colors.PASTEL_PINK1)
+    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "=^.^=", catX, catY, Colors.PASTEL_PINK1)
     hud:addWidget(cat)
 
     ---------------------------------------

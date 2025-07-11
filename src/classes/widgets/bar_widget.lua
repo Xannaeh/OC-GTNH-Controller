@@ -35,19 +35,19 @@ function BarWidget:new(id, glasses, hud, x, y, width, height, colorFill, colorBo
     )
     obj.base:addElement(obj.fillElement)
 
-    -- Text %
+    -- Text: % inside bar bottom
     obj.percentText = Text2D:new(
             id .. "_percent", glasses, hud,
-            obj.percent .. "%", x, y + height + 5,
-            colorBorder, 1.2, 1.0
+            obj.percent .. "%", x + 4, y + height - 25,
+            Colors.WHITE, 1.2, 1.0
     )
     obj.base:addElement(obj.percentText)
 
-    -- Text name
+    -- Text: name inside bar above %
     obj.nameText = Text2D:new(
             id .. "_name", glasses, hud,
-            liquidName, x, y + height + 20,
-            colorBorder, 1.2, 1.0
+            liquidName, x + 4, y + height - 12,
+            Colors.WHITE, 1.2, 1.0
     )
     obj.base:addElement(obj.nameText)
 
