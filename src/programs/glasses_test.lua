@@ -1,7 +1,8 @@
 -- src/programs/glasses_test.lua
 -- Draws:
 --  1️⃣ A centered red square
---  2️⃣ A bottom-left energy panel with border and text
+--  2️⃣ A bottom-left energy panel with border + text
+--  3️⃣ Corner markers to verify screen bounds
 
 local serialization = require("serialization")
 local GlassesHUD = require("classes.glasses_hud")
@@ -38,7 +39,7 @@ local function loadGlassesDevice()
 end
 
 ----------------------------------------------------
--- ✅ Create centered square widget (with debug)
+-- ✅ Create centered square widget (debug info)
 ----------------------------------------------------
 local function createCenteredSquareWidget(hud)
     local screenW, screenH = hud.screenResolution[1], hud.screenResolution[2]
@@ -47,7 +48,6 @@ local function createCenteredSquareWidget(hud)
     local px = (screenW - squareSize) / 2
     local py = (screenH - squareSize) / 2
 
-    -- Print debug info
     print("➡️ Screen resolution: " .. screenW .. "x" .. screenH)
     print("🟥 Centered square:")
     print("  Top-left corner: (" .. px .. ", " .. py .. ")")
@@ -77,16 +77,24 @@ local function createCenteredSquareWidget(hud)
 end
 
 ----------------------------------------------------
--- ✅ Create bottom-left energy panel widget
+-- ✅ Create bottom-left energy panel widget (dynamic)
 ----------------------------------------------------
 local function createBottomPanelWidget(hud)
+    local screenH = hud.screenResolution[2]
+
     local panelWidget = GlassesWidget:new("bottom_panel", hud.glasses)
 
-    local panelX, panelY = 0, 1374
-    local panelW, panelH = 1007, 1439 - 1374  -- height = 65px
+    local panelX = 0
+    local panelH = 65
+    local panelY = screenH - panelH  -- Snap to bottom
+    local panelW = 1007
 
     local bgColor = 0xF1C6F4
     local borderColor = 0x635164
+
+    print("🔲 Bottom panel:")
+    print("  Top-left: (" .. panelX .. ", " .. panelY .. ")")
+    print("  Bottom-right: (" .. (panelX + panelW) .. ", " .. (panelY + panelH) .. ")")
 
     -- Background
     panelWidget:addElement(Element.Rectangle2D:new(
@@ -97,7 +105,7 @@ local function createBottomPanelWidget(hud)
             bgColor, 1.0
     ))
 
-    -- Borders: top, bottom, left, right
+    -- Borders
     panelWidget:addElement(Element.Rectangle2D:new(
             "panel_border_top",
             hud.glasses, hud,
@@ -130,7 +138,7 @@ local function createBottomPanelWidget(hud)
             borderColor, 1.0
     ))
 
-    -- Left-centered text
+    -- Text inside
     panelWidget:addElement(Element.Text2D:new(
             "panel_text",
             hud.glasses, hud,
@@ -144,38 +152,38 @@ local function createBottomPanelWidget(hud)
 end
 
 ----------------------------------------------------
--- ✅ Create corner marker widgets (big squares)
+-- ✅ Create corner markers for visual bounds test
 ----------------------------------------------------
 local function createCornerMarkers(hud)
     local markers = {}
 
     local screenW, screenH = hud.screenResolution[1], hud.screenResolution[2]
-    local markerSize = 150  -- make them big & obvious
+    local markerSize = 80
 
     local corners = {
         {
             name = "top_left",
             x = 0,
             y = 0,
-            color = 0xFF0000  -- red
+            color = 0xFF0000
         },
         {
             name = "top_right",
             x = screenW - markerSize,
             y = 0,
-            color = 0x00FF00  -- green
+            color = 0x00FF00
         },
         {
             name = "bottom_left",
             x = 0,
             y = screenH - markerSize,
-            color = 0x0000FF  -- blue
+            color = 0x0000FF
         },
         {
             name = "bottom_right",
             x = screenW - markerSize,
             y = screenH - markerSize,
-            color = 0xFFFF00  -- yellow
+            color = 0xFFFF00
         }
     }
 
@@ -206,27 +214,23 @@ end
 ----------------------------------------------------
 function Program:run()
     local glassesDevice = loadGlassesDevice()
-    local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address, 2560, 1440, 3)
+    local hud = GlassesHUD:new(glassesDevice.internalId, glassesDevice.address, 2560, 1370, 3)
 
-    -- Clear existing
     hud:clear()
 
-    -- Add widgets
     local centerWidget = createCenteredSquareWidget(hud)
     local panelWidget = createBottomPanelWidget(hud)
+    local markerWidgets = createCornerMarkers(hud)
 
     hud:addWidget(centerWidget)
     hud:addWidget(panelWidget)
-
-    local markerWidgets = createCornerMarkers(hud)
     for _, w in ipairs(markerWidgets) do
         hud:addWidget(w)
     end
 
-    -- Render all
     hud:render()
 
-    print("✅ Centered square + bottom panel rendered!")
+    print("✅ Centered square + bottom panel + corners rendered!")
 
     while true do os.sleep(1) end
 end
