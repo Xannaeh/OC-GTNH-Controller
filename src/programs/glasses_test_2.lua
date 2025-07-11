@@ -70,8 +70,8 @@ function Program:run()
     -- ✅ 3) Cat Emoji
     -------------------------
     local catX = 1220  -- adjust horizontally (centered above hotbar)
-    local catY = 1520  -- adjust vertically above vanilla hearts
-    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "ฅ^•ﻌ•^ฅ", catX, catY)
+    local catY = 1320  -- adjust vertically above vanilla hearts
+    local cat = EmojiWidget:new("cat_emoji", hud.glasses, hud, "ฅ^•ﻌ•^ฅ", catX, catY,Colors.PASTEL_PINK1)
     hud:addWidget(cat)
 
     ---------------------------------------

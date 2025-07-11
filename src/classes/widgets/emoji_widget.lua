@@ -7,14 +7,14 @@ local Colors = require("constants.colors")
 local EmojiWidget = {}
 EmojiWidget.__index = EmojiWidget
 
-function EmojiWidget:new(id, glasses, hud, emoji, x, y)
+function EmojiWidget:new(id, glasses, hud, emoji, x, y, color)
     local obj = setmetatable({}, self)
     obj.base = GlassesWidget:new(id, glasses)
 
     obj.base:addElement(Text2D:new(
             id .. "_emoji", glasses, hud,
             emoji, x, y,
-            Colors.DECOR, 2.0, 1.0
+            color, 2.0, 1.0
     ))
 
     return obj
