@@ -6,7 +6,7 @@ local Colors = require("constants.colors")
 local CenterCrosshairWidget = {}
 CenterCrosshairWidget.__index = CenterCrosshairWidget
 
-function CenterCrosshairWidget:new(id, glasses, hud, centerX, centerY)
+function CenterCrosshairWidget:new(id, glasses, hud, centerX, centerY, thickness)
     local obj = setmetatable({}, self)
     obj.base = GlassesWidget:new(id, glasses)
 
@@ -18,7 +18,7 @@ function CenterCrosshairWidget:new(id, glasses, hud, centerX, centerY)
             id .. "_line1", glasses, hud,
             centerX - offset, centerY - offset,
             centerX, centerY,
-            0xFF0000, 1.0, 4
+            0xFF0000, 1.0, thickness
     ))
 
     -- Right down line
@@ -26,7 +26,7 @@ function CenterCrosshairWidget:new(id, glasses, hud, centerX, centerY)
             id .. "_line2", glasses, hud,
             centerX - offset, centerY + offset,
             centerX, centerY,
-            0xFF0000, 1.0, 4
+            0xFF0000, 1.0, thickness
     ))
 
     return obj

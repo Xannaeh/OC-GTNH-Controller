@@ -9,7 +9,7 @@ local Colors = require("constants.colors")
 local PowerWaveWidget = {}
 PowerWaveWidget.__index = PowerWaveWidget
 
-function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY, colorText)
+function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY, colorText, rectangleWidth, rectangleHeight)
     local obj = setmetatable({}, self)
     obj.base = GlassesWidget:new(id, glasses)
     obj.hud = hud
@@ -17,14 +17,14 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY, colorText)
     obj.baseX = baseX or 20
     obj.baseY = baseY or 1280
 
-    local width = 920   -- shorter to NOT touch vanilla hotbar
-    local height = 90   -- taller for bottom line to reach screen edge
+    obj.width = rectangleWidth or 920   -- shorter to NOT touch vanilla hotbar
+    obj.height = rectangleHeight or 90   -- taller for bottom line to reach screen edge
 
     -- ✅ Background panel
     obj.base:addElement(Rectangle2D:new(
             id .. "_bg", glasses, hud,
             obj.baseX, obj.baseY,
-            width, height,
+            obj.width, obj.height,
             Colors.PURPLE_LIGHT, 0.5
     ))
 

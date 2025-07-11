@@ -24,16 +24,33 @@ function Line2D:draw()
 
     local dx = self.x2 - self.x1
     local dy = self.y2 - self.y1
+
+    -- Line length
     local len = math.sqrt(dx * dx + dy * dy)
-    if len < 0.001 then len = 1 end  -- prevent zero division
+    if len < 0.001 then len = 1 end
 
-    local nx = -dy / len * self.thickness / 2
-    local ny =  dx / len * self.thickness / 2
+    -- Unit vector perpendicular to the line
+    local px = -dy / len
+    local py =  dx / len
 
-    quad.setVertex(1, self.hud:applyScale(self.x1 + nx), self.hud:applyScale(self.y1 + ny))
-    quad.setVertex(2, self.hud:applyScale(self.x1 - nx), self.hud:applyScale(self.y1 - ny))
-    quad.setVertex(3, self.hud:applyScale(self.x2 - nx), self.hud:applyScale(self.y2 - ny))
-    quad.setVertex(4, self.hud:applyScale(self.x2 + nx), self.hud:applyScale(self.y2 + ny))
+    -- Scale by half thickness
+    local hx = px * (self.thickness / 2)
+    local hy = py * (self.thickness / 2)
+
+    -- Compute 4 corners: consistent CCW order
+    local x1 = self.x1 + hx
+    local y1 = self.y1 + hy
+    local x2 = self.x1 - hx
+    local y2 = self.y1 - hy
+    local x3 = self.x2 - hx
+    local y3 = self.y2 - hy
+    local x4 = self.x2 + hx
+    local y4 = self.y2 + hy
+
+    quad.setVertex(1, self.hud:applyScale(x1), self.hud:applyScale(y1))
+    quad.setVertex(2, self.hud:applyScale(x2), self.hud:applyScale(y2))
+    quad.setVertex(3, self.hud:applyScale(x3), self.hud:applyScale(y3))
+    quad.setVertex(4, self.hud:applyScale(x4), self.hud:applyScale(y4))
 
     self.drawable = quad
 end

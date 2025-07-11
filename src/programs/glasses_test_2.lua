@@ -35,7 +35,8 @@ local function createPowerWave(hud)
     local powerWave = PowerWaveWidget:new(
             "power_wave",
             hud.glasses, hud,
-            wavePoints, 20, 1280, Colors.PURPLE_VERY_DARK
+            wavePoints, 20, 1290, Colors.PURPLE_VERY_DARK,
+            930, 90
     )
     hud:addWidget(powerWave)
 end
@@ -96,7 +97,7 @@ end
 local function createCrosshair(hud)
     local centerX = 1280  -- middle of your screen
     local centerY = 720
-    local crosshair = CenterCrosshairWidget:new("crosshair", hud.glasses, hud, centerX, centerY)
+    local crosshair = CenterCrosshairWidget:new("crosshair", hud.glasses, hud, centerX, centerY, 10)
     hud:addWidget(crosshair)
 end
 
