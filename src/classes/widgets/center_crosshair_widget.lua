@@ -10,8 +10,8 @@ function CenterCrosshairWidget:new(id, glasses, hud, centerX, centerY, thickness
     local obj = setmetatable({}, self)
     obj.base = GlassesWidget:new(id, glasses)
 
-    local length = 20
-    local offset = 10
+    local length = 2000
+    local offset = 1000
 
     -- Right up line
     obj.base:addElement(Line2D:new(
