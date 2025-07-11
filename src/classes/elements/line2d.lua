@@ -25,13 +25,11 @@ function Line2D:draw()
     local dx = self.x2 - self.x1
     local dy = self.y2 - self.y1
     local len = math.sqrt(dx * dx + dy * dy)
-    if len == 0 then len = 1 end
+    if len < 0.001 then len = 1 end  -- prevent zero division
 
-    -- Normalize perpendicular vector for thickness offset
     local nx = -dy / len * self.thickness / 2
     local ny =  dx / len * self.thickness / 2
 
-    -- 4 vertices for the thick line
     quad.setVertex(1, self.hud:applyScale(self.x1 + nx), self.hud:applyScale(self.y1 + ny))
     quad.setVertex(2, self.hud:applyScale(self.x1 - nx), self.hud:applyScale(self.y1 - ny))
     quad.setVertex(3, self.hud:applyScale(self.x2 - nx), self.hud:applyScale(self.y2 - ny))

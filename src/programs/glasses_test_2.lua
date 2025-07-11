@@ -4,6 +4,7 @@ local GlassesHUD = require("classes.glasses_hud")
 local BarWidget = require("classes.widgets.bar_widget")
 local PowerWaveWidget = require("classes.widgets.power_wave_widget")
 local EmojiWidget = require("classes.widgets.emoji_widget")
+local CenterCrosshairWidget = require("classes.widgets.center_crosshair_widget")
 local Colors = require("constants.colors")
 local os = require("os")
 
@@ -90,6 +91,16 @@ local function createCat(hud)
 end
 
 -----------------------------------------------------
+-- ✅ Center Crosshair Widget
+-----------------------------------------------------
+local function createCrosshair(hud)
+    local centerX = 1280  -- middle of your screen
+    local centerY = 720
+    local crosshair = CenterCrosshairWidget:new("crosshair", hud.glasses, hud, centerX, centerY)
+    hud:addWidget(crosshair)
+end
+
+-----------------------------------------------------
 -- ✅ Run all
 -----------------------------------------------------
 function Program:run()
@@ -97,8 +108,9 @@ function Program:run()
     createPowerWave(hud)
     createBarWidgets(hud)
     createCat(hud)
+    createCrosshair(hud)
     hud:render()
-    print("✅ HUD done: wave, bars, cat.")
+    print("✅ HUD done: wave, bars, cat, crosshair.")
     while true do os.sleep(1) end
 end
 
