@@ -43,11 +43,13 @@ function Program:run()
     local barSpacing = 10
 
     local pairHeights = {
-        barHeight,                           -- AB
-        barHeight * 0.75,                    -- CD
-        barHeight * 0.75 * 0.75,             -- EH
-        barHeight * 0.75 * 0.75 * 0.75       -- IJ
+        barHeight,                -- AB
+        barHeight * 0.75,         -- CD
+        barHeight * 0.75 * 0.75,  -- EH
+        barHeight * 0.75 * 0.75 * 0.75, -- IJ
+        barHeight * 0.75 * 0.75 * 0.75 * 0.75  -- extra pair if needed
     }
+
 
     local barPairs = {
         Colors.ACCENT1,
@@ -60,8 +62,9 @@ function Program:run()
     local n = 1
     for i, baseColor in ipairs(barPairs) do
         local h = pairHeights[i]
+        if not h then error("Missing pairHeights for pair " .. tostring(i)) end
         for j = 1, 2 do
-            local barY = barBaseY - h  -- bottom aligned
+            local barY = barBaseY - h
             local bar = BarWidget:new(
                     "bar_" .. n, hud.glasses, hud,
                     barX, barY, barWidth, h,
@@ -72,6 +75,7 @@ function Program:run()
             n = n + 1
         end
     end
+
 
     -------------------------
     -- ✅ 3) Cat Emoji
