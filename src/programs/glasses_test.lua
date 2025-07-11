@@ -218,9 +218,9 @@ function Program:run()
 
     hud:clear()
 
+    local markerWidgets = createCornerMarkers(hud)
     local centerWidget = createCenteredSquareWidget(hud)
     local panelWidget = createBottomPanelWidget(hud)
-    local markerWidgets = createCornerMarkers(hud)
 
     hud:addWidget(centerWidget)
     hud:addWidget(panelWidget)

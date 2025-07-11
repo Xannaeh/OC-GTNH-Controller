@@ -20,6 +20,7 @@ local dirs = {
     "/home/src/classes",
     "/home/src/classes/elements",
     "/home/src/classes/utils",
+    "/home/src/classes/widgets",
     "/home/src/constants",
     "/home/src/programs",
 }
@@ -35,6 +36,8 @@ local files = {
     { path = "/home/src/classes/elements/text2d.lua", url = github .. "/src/classes/elements/text2d.lua" },
     { path = "/home/src/classes/elements/triangle2d.lua", url = github .. "/src/classes/elements/triangle2d.lua" },
     { path = "/home/src/classes/utils/color.lua", url = github .. "/src/classes/utils/color.lua" },
+    { path = "/home/src/classes/widgets/bar_widget.lua", url = github .. "/src/classes/widgets/bar_widget.lua" },
+    { path = "/home/src/classes/widgets/power_wave.lua", url = github .. "/src/classes/widgets/power_wave.lua" },
     { path = "/home/src/classes/battery_buffer.lua", url = github .. "/src/classes/battery_buffer.lua" },
     { path = "/home/src/classes/fluid_storage.lua", url = github .. "/src/classes/fluid_storage.lua" },
     { path = "/home/src/classes/glasses_element.lua", url = github .. "/src/classes/glasses_element.lua" },
@@ -42,12 +45,14 @@ local files = {
     { path = "/home/src/classes/glasses_widget.lua", url = github .. "/src/classes/glasses_widget.lua" },
     { path = "/home/src/classes/power_storage.lua", url = github .. "/src/classes/power_storage.lua" },
     { path = "/home/src/classes/universal_tank.lua", url = github .. "/src/classes/universal_tank.lua" },
+    { path = "/home/src/constants/colors.lua", url = github .. "/src/constants/colors.lua" },
     { path = "/home/src/constants/device_types.lua", url = github .. "/src/constants/device_types.lua" },
     { path = "/home/src/constants/glasses_constants.lua", url = github .. "/src/constants/glasses_constants.lua" },
     { path = "/home/src/programs/device_registry.lua", url = github .. "/src/programs/device_registry.lua" },
     { path = "/home/src/programs/device_status.lua", url = github .. "/src/programs/device_status.lua" },
     { path = "/home/src/programs/glasses_demo.lua", url = github .. "/src/programs/glasses_demo.lua" },
     { path = "/home/src/programs/glasses_test.lua", url = github .. "/src/programs/glasses_test.lua" },
+    { path = "/home/src/programs/glasses_test_2.lua", url = github .. "/src/programs/glasses_test_2.lua" },
     { path = "/home/src/main.lua", url = github .. "/src/main.lua" },
 }
 

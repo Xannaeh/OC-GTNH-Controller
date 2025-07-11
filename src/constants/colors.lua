@@ -1,0 +1,18 @@
+-- src/cosntants/colors.lua
+
+local Colors = {
+    PASTEL_PINK1 = 0xE9BFEC,
+    PASTEL_PINK2 = 0xC8A4CA,
+    PASTEL_PINK3 = 0xF1C6F4,
+    PURPLE_LIGHT = 0xA688A8,
+    PURPLE_MEDIUM = 0x856D86,
+    PURPLE_DARK = 0x635164,
+    ACCENT1 = 0xDF76EC,
+    ACCENT2 = 0xBE65CA,
+    ACCENT3 = 0xE67AF5,
+    ACCENT4 = 0x9E54A8,
+    ACCENT5 = 0x7E4386,
+    ACCENT6 = 0x5E3264,
+}
+
+return Colors

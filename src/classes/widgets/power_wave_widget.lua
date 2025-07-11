@@ -1,0 +1,48 @@
+-- src/classes/widgets/power_wave_widget.lua
+
+local GlassesWidget = require("classes.glasses_widget")
+local Line2D = require("classes.elements.line2d")
+local Text2D = require("classes.elements.text2d")
+local Colors = require("constants.colors")
+
+local PowerWaveWidget = {}
+PowerWaveWidget.__index = PowerWaveWidget
+
+function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY)
+    local obj = setmetatable({}, self)
+    obj.base = GlassesWidget:new(id, glasses)
+    obj.hud = hud
+    obj.points = points or {}
+    obj.baseX = baseX or 200
+    obj.baseY = baseY or 1300
+
+    -- Generate segments
+    for i = 1, #points - 1 do
+        local x1 = obj.baseX + points[i][1]
+        local y1 = obj.baseY + points[i][2]
+        local x2 = obj.baseX + points[i + 1][1]
+        local y2 = obj.baseY + points[i + 1][2]
+
+        obj.base:addElement(Line2D:new(
+                id .. "_seg_" .. i, glasses, hud,
+                x1, y1, x2, y2,
+                Colors.ACCENT1, 1.0
+        ))
+    end
+
+    obj.statusText = Text2D:new(
+            id .. "_text", glasses, hud,
+            "80% | +1200 EU/t",
+            obj.baseX + 200, obj.baseY - 20,
+            Colors.PURPLE_DARK, 1.5, 1.0
+    )
+    obj.base:addElement(obj.statusText)
+
+    return obj
+end
+
+function PowerWaveWidget:render()
+    self.base:render()
+end
+
+return PowerWaveWidget
