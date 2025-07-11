@@ -45,14 +45,14 @@ function PowerWaveWidget:new(id, glasses, hud, points, baseX, baseY, colorText, 
     -- ✅ Status text on right side, inside: % on top, EU/t on bottom
     obj.percentText = Text2D:new(
             id .. "_percent", glasses, hud,
-            "80%", obj.baseX + width - 80, obj.baseY + 5,
+            "80%", obj.baseX + obj.width - 80, obj.baseY + 5,
             colorText, 1.5, 1.0
     )
     obj.base:addElement(obj.percentText)
 
     obj.euText = Text2D:new(
             id .. "_eu", glasses, hud,
-            "+1200 EU/t", obj.baseX + width - 120, obj.baseY + height - 25,
+            "+1200 EU/t", obj.baseX + obj.width - 120, obj.baseY + obj.height - 25,
             colorText, 1.5, 1.0
     )
     obj.base:addElement(obj.euText)
