@@ -18,6 +18,8 @@ function Line2D:new(id, glasses, hud, x1, y1, x2, y2, color, alpha, thickness)
 end
 
 function Line2D:draw()
+    print("[Line2D] Drawing: (" .. self.x1 .. "," .. self.y1 .. ") -> (" .. self.x2 .. "," .. self.y2 .. ")")
+
     local quad = self.glasses.addQuad()
     quad.setColor(Color.RGB(self.color))
     quad.setAlpha(self.alpha)
@@ -35,7 +37,7 @@ function Line2D:draw()
 
     -- Perpendicular unit
     local px = -uy
-    local py =  ux
+    local py = ux
 
     -- Half thickness offset
     local tx = px * (self.thickness / 2)
@@ -50,6 +52,8 @@ function Line2D:draw()
     local y3 = self.y2 - ty
     local x4 = self.x2 + tx
     local y4 = self.y2 + ty
+
+    print(("[Line2D] Vertices: (%.2f,%.2f)  (%.2f,%.2f)  (%.2f,%.2f)  (%.2f,%.2f)"):format(x1, y1, x2, y2, x3, y3, x4, y4))
 
     quad.setVertex(1, self.hud:applyScale(x1), self.hud:applyScale(y1))
     quad.setVertex(2, self.hud:applyScale(x2), self.hud:applyScale(y2))

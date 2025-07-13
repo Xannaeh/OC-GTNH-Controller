@@ -95,9 +95,7 @@ end
 -- ✅ Center Crosshair Widget
 -----------------------------------------------------
 local function createCrosshair(hud)
-    local centerX = 1280  -- middle of your screen
-    local centerY = 720
-    local crosshair = CenterCrosshairWidget:new("crosshair", hud.glasses, hud, centerX, centerY, 500)
+    local crosshair = CenterCrosshairWidget:new("crosshair", hud.glasses, hud, 4)
     hud:addWidget(crosshair)
 end
 

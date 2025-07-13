@@ -6,12 +6,13 @@ local Colors = require("constants.colors")
 local CenterCrosshairWidget = {}
 CenterCrosshairWidget.__index = CenterCrosshairWidget
 
-function CenterCrosshairWidget:new(id, glasses, hud, centerX, centerY, thickness)
+function CenterCrosshairWidget:new(id, glasses, hud, thickness)
     local obj = setmetatable({}, self)
     obj.base = GlassesWidget:new(id, glasses)
 
-    local length = 20000
-    local offset = 10000
+    local centerX = hud.width / 2
+    local centerY = hud.height / 2
+    local offset = 100
 
     -- Right up line
     obj.base:addElement(Line2D:new(
